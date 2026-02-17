@@ -23,19 +23,13 @@ public record Permission(String name, String resource, String description) {
         description = description.trim(); // Нормализация
     }
 
-    /**
-     * Форматированный вывод права доступа
-     * @return строка вида "READ on users: Описание текст"
-     */
+
     public String format() {
         return String.format("%s on %s: %s", name, resource, description);
     }
 
     /**
      * Проверка соответствия шаблонам поиска
-     * @param namePattern шаблон для имени (используется contains)
-     * @param resourcePattern шаблон для ресурса (используется contains)
-     * @return true если совпадает по обоим шаблонам
      */
     public boolean matches(String namePattern, String resourcePattern) {
         boolean nameMatch = namePattern == null || namePattern.isEmpty() ||

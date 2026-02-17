@@ -3,11 +3,8 @@ package rbac;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
-/**
- * Класс роли с управлением правами доступа
- */
+
 public class Role {
-    // Счётчик для генерации уникальных ID
     private static final AtomicLong ID_COUNTER = new AtomicLong(0);
 
     private final String id;
@@ -15,9 +12,7 @@ public class Role {
     private final String description;
     private final Set<Permission> permissions = new HashSet<>();
 
-    /**
-     * Конструктор роли с автоматической генерацией ID
-     */
+
     public Role(String name, String description) {
         if (name == null || name.trim().isEmpty()) {
             throw new IllegalArgumentException("Имя роли не может быть пустым или null");
@@ -30,7 +25,6 @@ public class Role {
         this.description = description.trim();
     }
 
-    // Геттеры
     public String id() {
         return id;
     }
@@ -43,9 +37,8 @@ public class Role {
         return description;
     }
 
-    /**
-     * Добавление права доступа к роли
-     */
+    // Добавление права доступа к роли
+
     public void addPermission(Permission permission) {
         if (permission == null) {
             throw new IllegalArgumentException("Право доступа не может быть null");
@@ -53,23 +46,17 @@ public class Role {
         permissions.add(permission);
     }
 
-    /**
-     * Удаление права доступа из роли
-     */
+    //Удаление права доступа из роли
+
     public void removePermission(Permission permission) {
         permissions.remove(permission);
     }
 
-    /**
-     * Проверка наличия конкретного права
-     */
     public boolean hasPermission(Permission permission) {
         return permissions.contains(permission);
     }
 
-    /**
-     * Проверка наличия права по имени и ресурсу
-     */
+
     public boolean hasPermission(String permissionName, String resource) {
         if (permissionName == null || resource == null) return false;
         String nameUpper = permissionName.trim().toUpperCase();
@@ -78,9 +65,7 @@ public class Role {
                 .anyMatch(p -> p.name().equals(nameUpper) && p.resource().equals(resourceLower));
     }
 
-    /**
-     * Получение неизменяемой копии прав доступа
-     */
+
     public Set<Permission> getPermissions() {
         return Collections.unmodifiableSet(new HashSet<>(permissions));
     }
@@ -102,9 +87,7 @@ public class Role {
         return "Role{id='" + id + "', name='" + name + "', permissions=" + permissions.size() + "}";
     }
 
-    /**
-     * Форматированный вывод роли со всеми правами
-     */
+
     public String format() {
         StringBuilder sb = new StringBuilder();
         sb.append("Роль: ").append(name).append(" [ID: ").append(id).append("]\n");

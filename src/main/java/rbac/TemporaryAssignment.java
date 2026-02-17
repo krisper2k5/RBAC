@@ -6,17 +6,13 @@ import java.time.temporal.ChronoUnit;
 
 
 public class TemporaryAssignment extends AbstractRoleAssignment {
-    // Форматер для парсинга даты
     private static final DateTimeFormatter FORMATTER =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     private String expiresAt;      // Дата истечения срока
     private boolean autoRenew = false; // Флаг автоматического продления
 
-    /**
-     * Конструктор временного назначения
-     * @param expiresAt дата истечения в формате "ГГГГ-ММ-ДД" или "ГГГГ-ММ-ДД ЧЧ:ММ"
-     */
+    //Конструктор времени
     public TemporaryAssignment(User user, Role role, AssignmentMetadata metadata,
                                String expiresAt) {
         super(user, role, metadata);
@@ -71,9 +67,8 @@ public class TemporaryAssignment extends AbstractRoleAssignment {
         this.autoRenew = autoRenew;
     }
 
-    /**
-     * Получение оставшегося времени до истечения
-     */
+    //Получение оставшегося времени до истечения
+
     public String getTimeRemaining() {
         if (isExpired()) return "Истёк";
         LocalDateTime now = LocalDateTime.now();
