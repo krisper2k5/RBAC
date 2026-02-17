@@ -43,3 +43,5 @@ public record User(String username, String fullName, String email) {
         return String.format("%s (%s) <%s>", username, fullName, email);
     }
 }
+
+//1

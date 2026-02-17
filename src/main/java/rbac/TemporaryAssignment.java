@@ -89,3 +89,5 @@ public class TemporaryAssignment extends AbstractRoleAssignment {
                 "\nОсталось: " + getTimeRemaining();
     }
 }
+
+//1

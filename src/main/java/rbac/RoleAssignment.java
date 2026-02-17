@@ -15,3 +15,5 @@ public interface RoleAssignment {
 
     String assignmentType();
 }
+
+//1
