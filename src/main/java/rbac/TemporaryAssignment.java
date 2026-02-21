@@ -40,7 +40,7 @@ public class TemporaryAssignment extends AbstractRoleAssignment {
     }
 
     
-    private LocalDateTime parseExpiryDate() {
+    LocalDateTime parseExpiryDate() {
         String dt = expiresAt.length() == 10 ? expiresAt + " 23:59" : expiresAt;
         return LocalDateTime.parse(dt, FORMATTER);
     }

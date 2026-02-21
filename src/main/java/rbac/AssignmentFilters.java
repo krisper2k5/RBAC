@@ -1,8 +1,11 @@
 package rbac;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class AssignmentFilters {
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
     public static AssignmentFilter byUser(User user) {
         return assignment -> assignment.user().equals(user);
     }
@@ -36,12 +39,15 @@ public class AssignmentFilters {
     }
 
     public static AssignmentFilter assignedAfter(String date) {
-        LocalDateTime parsedDate = LocalDateTime.parse(date);
-        return assignment -> assignment.metadata().assignedAt().isAfter(parsedDate);
+        LocalDateTime parsedDate = LocalDateTime.parse(date, FORMATTER);
+        return assignment -> {
+            LocalDateTime assignedAt = LocalDateTime.parse(assignment.metadata().assignedAt(), FORMATTER);
+            return assignedAt.isAfter(parsedDate);
+        };
     }
 
     public static AssignmentFilter expiringBefore(String date) {
-        LocalDateTime parsedDate = LocalDateTime.parse(date);
+        LocalDateTime parsedDate = LocalDateTime.parse(date, FORMATTER);
         return assignment -> {
             if (assignment instanceof TemporaryAssignment temp) {
                 return temp.parseExpiryDate().isBefore(parsedDate);

@@ -32,6 +32,13 @@ public class RoleManager implements Repository<Role> {
         return new ArrayList<>(rolesById.values());
     }
 
+    public List<Role> findAll(RoleFilter filter, Comparator<Role> sorter) {
+        return rolesById.values().stream()
+                .filter(role -> filter == null || filter.test(role))
+                .sorted(sorter != null ? sorter : Comparator.comparing(Role::name))
+                .collect(Collectors.toList());
+    }
+
     @Override
     public int count() {
         return rolesById.size();
@@ -50,13 +57,6 @@ public class RoleManager implements Repository<Role> {
     public List<Role> findByFilter(RoleFilter filter) {
         return rolesById.values().stream()
                 .filter(filter::test)
-                .collect(Collectors.toList());
-    }
-
-    public List<Role> findAll(RoleFilter filter, Comparator<Role> sorter) {
-        return rolesById.values().stream()
-                .filter(filter::test)
-                .sorted(sorter)
                 .collect(Collectors.toList());
     }
 

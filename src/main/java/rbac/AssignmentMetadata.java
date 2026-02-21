@@ -6,16 +6,17 @@ import java.time.format.DateTimeFormatter;
 public record AssignmentMetadata(String assignedBy, String assignedAt, String reason) {
 
     // Форматер для даты и времени
-    private static final DateTimeFormatter FORMATTER =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
-    
     public static AssignmentMetadata now(String assignedBy, String reason) {
         String now = LocalDateTime.now().format(FORMATTER);
         return new AssignmentMetadata(assignedBy, now, reason);
     }
 
-    
+    public AssignmentMetadata(LocalDateTime assignedAt, String assignedBy, String reason) {
+        this(assignedBy, assignedAt.format(FORMATTER), reason);
+    }
+
     public String format() {
         StringBuilder sb = new StringBuilder();
         sb.append("Назначен администратором: ").append(assignedBy)

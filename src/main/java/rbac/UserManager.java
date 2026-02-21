@@ -57,8 +57,8 @@ public class UserManager implements Repository<User> {
 
     public List<User> findAll(UserFilter filter, Comparator<User> sorter) {
         return users.values().stream()
-                .filter(filter::test)
-                .sorted(sorter)
+                .filter(filter == null ? u -> true : filter::test)
+                .sorted(sorter != null ? sorter : Comparator.comparing(User::username))
                 .collect(Collectors.toList());
     }
 
