@@ -1,7 +1,14 @@
 package rbac;
+import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
+        runTests();
+
+        runInteractiveConsole();
+    }
+
+    private static void runTests() {
         System.out.println("=== Тест 1.1: Валидация пользователя ===");
         try {
             User u1 = User.validate("john_doe", "Иван Иванов", "ivan@example.com");
@@ -47,5 +54,39 @@ public class Main {
                 "2026-12-31 23:59"
         );
         System.out.println(ta.summary());
+
+        System.out.println("\n=== Тесты завершены ===\n");
+    }
+
+    private static void runInteractiveConsole() {
+        System.out.println("\n");
+        System.out.println("╔═══════════════════════════════════════════════════════════╗");
+        System.out.println("║         RBAC System - Управление доступом                 ║");
+        System.out.println("╚═══════════════════════════════════════════════════════════╝");
+
+        RBACSystem system = new RBACSystem();
+        system.initialize();
+
+        CommandParser parser = new CommandParser();
+        CommandRegistry.registerAllCommands(parser);
+
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Система инициализирована. Текущий пользователь: " + system.getCurrentUser());
+        System.out.println("Введите 'help' для списка команд.\n");
+
+        while (true) {
+            System.out.print("rbac> ");
+            String input = scanner.nextLine().trim();
+
+            if (input.equalsIgnoreCase("exit")) {
+                parser.executeCommand("exit", scanner, system);
+                break;
+            }
+
+            parser.parseAndExecute(input, scanner, system);
+        }
+
+        scanner.close();
     }
 }
