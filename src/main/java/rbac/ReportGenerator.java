@@ -114,7 +114,7 @@ public class ReportGenerator {
     public void exportToFile(String report, String filename) {
         try (PrintWriter writer = new PrintWriter(new FileWriter(filename))) {
             writer.println(report);
-            System.out.println("✓ Отчёт сохранён в " + filename);
+            System.out.println("Отчёт сохранён в " + filename);
         } catch (IOException e) {
             System.err.println("Ошибка экспорта: " + e.getMessage());
         }
