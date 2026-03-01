@@ -1,49 +1,35 @@
-Лаба 1
+Lab 3
 
-# Создаём правильную структуру папок
-mkdir -p src/main/java/rbac
+Заупстить main -> help -> Далее мы увидим все доступные действия:
 
-# Коммит 0: Maven конфигурация
-git add pom.xml
-git commit -m "chore: добавить структуру Maven проекта"
-
-# Коммит 1: Пользователь
-git add src/main/java/rbac/User.java
-git commit -m "feat(bds): реализовать запись User с валидацией (1.1)"
-
-# Коммит 2: Права доступа
-git add src/main/java/rbac/Permission.java
-git commit -m "feat(bds): реализовать запись Permission с нормализацией (1.2)"
-
-# Коммит 3: Роль
-git add src/main/java/rbac/Role.java
-git commit -m "feat(bds): реализовать класс Role с управлением правами (1.3)"
-
-# Коммит 4: Метаданные
-git add src/main/java/rbac/AssignmentMetadata.java
-git commit -m "feat(bds): реализовать запись AssignmentMetadata (1.4)"
-
-# Коммит 5: Интерфейс назначения
-git add src/main/java/rbac/RoleAssignment.java
-git commit -m "feat(bds): определить интерфейс RoleAssignment (1.5)"
-
-# Коммит 6: Абстрактный класс
-git add src/main/java/rbac/AbstractRoleAssignment.java
-git commit -m "feat(bds): реализовать абстрактный класс AbstractRoleAssignment (1.6)"
-
-# Коммит 7: Постоянное назначение
-git add src/main/java/rbac/PermanentAssignment.java
-git commit -m "feat(bds): реализовать класс PermanentAssignment (1.7)"
-
-# Коммит 8: Временное назначение
-git add src/main/java/rbac/TemporaryAssignment.java
-git commit -m "feat(bds): реализовать класс TemporaryAssignment (1.8)"
-
-# Коммит 9: Демонстрация
-git add src/main/java/rbac/Main.java
-git commit -m "feat(bds): добавить Main класс с демонстрацией работы"
-
-# Слияние в ветку dev
-git checkout dev
-git merge --no-ff feature/bds -m "feat: завершить реализацию базовых структур данных (подзадача 1)"
-git push origin dev
+assign-role               - Назначить роль пользователю   
+assignment-active         - Активные назначения  
+assignment-expired        - Истёкшие временные назначения  
+assignment-extend         - Продлить временное назначение  
+assignment-list           - Список всех назначений    
+assignment-list-role      - Список пользователей с конкретной ролью  
+assignment-list-user      - Назначения конкретного пользователя  
+assignment-search         - Поиск назначений по фильтрам  
+clear                     - Очистить экран  
+exit                      - Выход из программы  
+help                      - Справка по командам  
+load                      - Загрузить данные из файла  
+permissions-check         - Проверить наличие права у пользователя  
+permissions-user          - Все права конкретного пользователя  
+revoke-role               - Отозвать роль у пользователя  
+role-add-permission       - Добавить право к роли  
+role-create               - Создать новую роль  
+role-delete               - Удалить роль  
+role-list                 - Вывести список всех ролей  
+role-remove-permission    - Удалить право из роли  
+role-search               - Поиск ролей  
+role-update               - Обновить роль  
+role-view                 - Просмотр роли  
+save                      - Сохранить данные в файл  
+stats                     - Статистика системы  
+user-create               - Создать нового пользователя  
+user-delete               - Удалить пользователя  
+user-list                 - Вывести список всех пользователей  
+user-search               - Поиск пользователей по фильтрам  
+user-update               - Обновить данные пользователя  
+user-view                 - Просмотр информации о пользователе  
