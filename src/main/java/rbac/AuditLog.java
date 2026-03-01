@@ -61,7 +61,6 @@ public class AuditLog {
     }
 
     // Количество записей
-
     public int size() {
         return entries.size();
     }
