@@ -568,21 +568,17 @@ public class CommandRegistry {
                 });
 
         // assignment-active
-        parser.registerCommand("assignment-active", "Только активные назначения",
-                (scanner, system) -> {
-                    List<RoleAssignment> assignments = system.getAssignmentManager()
-                            .findAll(AssignmentFilters.activeOnly(), null);
-
-                    if (assignments.isEmpty()) {
-                        System.out.println("Активных назначений не найдено.");
-                        return;
-                    }
-
-                    System.out.println("\n=== Активные назначения (" + assignments.size() + ") ===");
-                    for (RoleAssignment a : assignments) {
-                        System.out.println("  " + a.user().username() + " -> " + a.role().name());
-                    }
-                });
+        parser.registerCommand("assignment-active", "Активные назначения", (scanner, system) -> {
+            List<RoleAssignment> assignments = system.getAssignmentManager().getActiveAssignments();
+            if (assignments.isEmpty()) {
+                System.out.println("Активных назначений не найдено.");
+                return;
+            }
+            System.out.println("\n=== Активные назначения (" + assignments.size() + ") ===");
+            for (RoleAssignment a : assignments) {
+                System.out.printf("  %s -> %s\n", a.user().username(), a.role().name());
+            }
+        });
 
         // assignment-expired
         parser.registerCommand("assignment-expired", "Истёкшие временные назначения",
