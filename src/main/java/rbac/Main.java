@@ -60,7 +60,7 @@ public class Main {
 
     private static void runInteractiveConsole() {
         System.out.println("\n");
-        System.out.println("         RBAC System - Управление доступом                 ");
+        System.out.println("==== RBAC System - Управление доступом ====");
 
         RBACSystem system = new RBACSystem();
         system.initialize();

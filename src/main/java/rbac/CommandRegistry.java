@@ -257,7 +257,6 @@ public class CommandRegistry {
             System.out.print("Новое описание: ");
             String newDesc = scanner.nextLine().trim();
 
-            // Примечание: для полноценного обновления нужно добавить метод в RoleManager
             System.out.println("✓ Обновление роли (требуется доработка RoleManager)");
         });
 
