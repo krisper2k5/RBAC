@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 public class ReportGenerator {
 
     // Отчёт по пользователям с их ролями
-
     public String generateUserReport(UserManager userManager, AssignmentManager assignmentManager) {
         StringBuilder sb = new StringBuilder();
         sb.append("=== ОТЧЁТ ПО ПОЛЬЗОВАТЕЛЯМ ===\n\n");
@@ -38,7 +37,6 @@ public class ReportGenerator {
     }
 
     // Отчёт по ролям с количеством пользователей
-
     public String generateRoleReport(RoleManager roleManager, AssignmentManager assignmentManager) {
         StringBuilder sb = new StringBuilder();
         sb.append("=== ОТЧЁТ ПО РОЛЯМ ===\n\n");
@@ -63,7 +61,6 @@ public class ReportGenerator {
     }
 
     // Матрица прав: пользователи × ресурсы
-
     public String generatePermissionMatrix(UserManager userManager, AssignmentManager assignmentManager) {
         StringBuilder sb = new StringBuilder();
         sb.append("=== МАТРИЦА ПРАВ ДОСТУПА ===\n\n");
