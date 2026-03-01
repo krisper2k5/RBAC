@@ -3,6 +3,7 @@ import java.util.*;
 import java.util.function.Predicate;
 
 public class ConsoleUtils {
+
     private static final Scanner SCANNER = new Scanner(System.in);
 
     public static String promptString(String message, boolean required) {
