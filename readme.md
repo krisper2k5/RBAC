@@ -1,12 +1,12 @@
-Lab 3
-
 Заупстить main -> help -> Далее мы увидим все доступные действия:
 
-assign-role               - Назначить роль пользователю   
+Lab 3, Lab 4
+
+assign-role               - Назначить роль пользователю  
 assignment-active         - Активные назначения  
 assignment-expired        - Истёкшие временные назначения  
 assignment-extend         - Продлить временное назначение  
-assignment-list           - Список всех назначений    
+assignment-list           - Список всех назначений  
 assignment-list-role      - Список пользователей с конкретной ролью  
 assignment-list-user      - Назначения конкретного пользователя  
 assignment-search         - Поиск назначений по фильтрам  
