@@ -14,6 +14,8 @@ public interface RoleAssignment {
     boolean isActive();
 
     String assignmentType();
+
+    boolean summary();
 }
 
 //1
