@@ -22,15 +22,20 @@ public class ValidationUtils {
         return date != null && DATE_PATTERN.matcher(date.trim()).matches();
     }
 
-    // Нормализация строки: trim, удаление лишних пробелов, приведение регистра
-    public static String normalizeString(String input, boolean toLower) {
+    // Нормализация строки: trim, удаление лишних пробелов
+    public static String normalizeString(String input) {
         if (input == null) return null;
-        String normalized = input.trim().replaceAll("\\s+", " ");
-        return toLower ? normalized.toLowerCase() : normalized;
+        return input.trim().replaceAll("\\s+", " ");
+    }
+
+    // Нормализация с приведением регистра
+    public static String normalizeString(String input, boolean toLower) {
+        String normalized = normalizeString(input);
+        return toLower && normalized != null ? normalized.toLowerCase() : normalized;
     }
 
     // Проверка на пустую строку с выбросом исключения
-        public static void requireNonEmpty(String value, String fieldName) {
+    public static void requireNonEmpty(String value, String fieldName) {
         if (value == null || value.trim().isEmpty()) {
             throw new IllegalArgumentException(fieldName + " не может быть пустым");
         }

@@ -6,26 +6,21 @@ public class RBACSystem {
     private final UserManager userManager;
     private final RoleManager roleManager;
     private final AssignmentManager assignmentManager;
+    private final AuditLog auditLog;
     private String currentUser;
 
     public RBACSystem() {
         this.userManager = new UserManager();
         this.roleManager = new RoleManager();
         this.assignmentManager = new AssignmentManager();
+        this.auditLog = new AuditLog();
         this.currentUser = "system";
     }
 
-    public UserManager getUserManager() {
-        return userManager;
-    }
-
-    public RoleManager getRoleManager() {
-        return roleManager;
-    }
-
-    public AssignmentManager getAssignmentManager() {
-        return assignmentManager;
-    }
+    public UserManager getUserManager() { return userManager; }
+    public RoleManager getRoleManager() { return roleManager; }
+    public AssignmentManager getAssignmentManager() { return assignmentManager; }
+    public AuditLog getAuditLog() { return auditLog; }
 
     public void setCurrentUser(String username) {
         this.currentUser = username;
@@ -36,16 +31,18 @@ public class RBACSystem {
     }
 
     public void initialize() {
-        Permission readUsers = new Permission("READ", "users", "Просмотр списка пользователей");
+        auditLog.log("SYSTEM_INIT", "system", "RBAC", "Инициализация системы");
+
+        // Создаём права
+        Permission readUsers = new Permission("READ", "users", "Просмотр пользователей");
         Permission writeUsers = new Permission("WRITE", "users", "Редактирование пользователей");
         Permission deleteUsers = new Permission("DELETE", "users", "Удаление пользователей");
-
         Permission readReports = new Permission("READ", "reports", "Просмотр отчётов");
         Permission writeReports = new Permission("WRITE", "reports", "Редактирование отчётов");
-
         Permission readSettings = new Permission("READ", "settings", "Просмотр настроек");
         Permission writeSettings = new Permission("WRITE", "settings", "Изменение настроек");
 
+        // Создаём роли
         Role admin = new Role("Admin", "Полный доступ ко всем функциям системы");
         admin.addPermission(readUsers);
         admin.addPermission(writeUsers);
@@ -54,28 +51,31 @@ public class RBACSystem {
         admin.addPermission(writeReports);
         admin.addPermission(readSettings);
         admin.addPermission(writeSettings);
+        roleManager.add(admin);
 
         Role manager = new Role("Manager", "Управление отчётами и пользователями");
         manager.addPermission(readUsers);
         manager.addPermission(writeUsers);
         manager.addPermission(readReports);
         manager.addPermission(writeReports);
+        roleManager.add(manager);
 
         Role viewer = new Role("Viewer", "Только для чтения");
         viewer.addPermission(readUsers);
         viewer.addPermission(readReports);
         viewer.addPermission(readSettings);
-
-        roleManager.add(admin);
-        roleManager.add(manager);
         roleManager.add(viewer);
 
+        // Создаём администратора
         User adminUser = User.validate("admin", "Администратор Системы", "admin@company.com");
         userManager.add(adminUser);
+        auditLog.log("USER_CREATE", "system", "admin", "Создан пользователь admin");
 
+        // Назначаем роль Admin администратору
         AssignmentMetadata meta = AssignmentMetadata.now("system", "Инициализация системы");
         PermanentAssignment assignment = new PermanentAssignment(adminUser, admin, meta);
         assignmentManager.add(assignment);
+        auditLog.log("ROLE_ASSIGN", "system", "admin", "Назначена роль Admin");
 
         setCurrentUser("admin");
     }

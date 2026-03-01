@@ -18,7 +18,7 @@ public record AuditEntry(
                 action,
                 performer,
                 target,
-                details
+                details != null ? details : "-"
         );
     }
 
