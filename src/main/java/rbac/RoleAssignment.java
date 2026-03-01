@@ -15,7 +15,7 @@ public interface RoleAssignment {
 
     String assignmentType();
 
-    boolean summary();
+    String summary();
 }
 
 //1
