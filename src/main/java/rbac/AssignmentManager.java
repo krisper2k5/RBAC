@@ -91,4 +91,21 @@ public class AssignmentManager implements Repository<RoleAssignment> {
             ta.extend(newExpirationDate);
         }
     }
+
+    public int cleanupExpiredTemporaryAssignments() {
+        int removed = 0;
+        List<RoleAssignment> snapshot = new ArrayList<>(assignments.values());
+
+        for (RoleAssignment assignment : snapshot) {
+            if (assignment instanceof TemporaryAssignment && !assignment.isActive()) {
+                synchronized (assignmentLock) {
+                    if (assignments.containsKey(assignment.assignmentId()) && !assignment.isActive()) {
+                        assignments.remove(assignment.assignmentId());
+                        removed++;
+                    }
+                }
+            }
+        }
+        return removed;
+    }
 }

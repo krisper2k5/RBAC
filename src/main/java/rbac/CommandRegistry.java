@@ -12,6 +12,7 @@ public class CommandRegistry {
         registerReportCommands(parser);  // ← ДОБАВЛЕНО!
         registerServiceCommands(parser);
         registerAsyncCommands(parser);
+        registerSchedulerCommands(parser);
     }
 
     private static void registerUserCommands(CommandParser parser) {
@@ -343,6 +344,32 @@ public class CommandRegistry {
             String details = ConsoleUtils.promptString("Детали", false);
             system.getAuditLog().logAsync(action, system.getCurrentUser(), target, details);
             ConsoleUtils.printSuccess("Запись добавлена в очередь аудита.");
+        });
+    }
+
+    private static void registerSchedulerCommands(CommandParser parser) {
+        parser.registerCommand("scheduler-start", "Запустить фоновые задачи (интервал в сек.)", (scanner, system) -> {
+            if (system.getScheduler().isRunning()) {
+                ConsoleUtils.printWarning("Планировщик уже запущен.");
+                return;
+            }
+            int sec = ConsoleUtils.promptInt("Интервал запуска (секунды)", 5, 300);
+            system.startScheduler(sec);
+            ConsoleUtils.printSuccess("Планировщик запущен. Интервал: " + sec + "с");
+        });
+
+        parser.registerCommand("scheduler-stop", "Остановить фоновые задачи", (scanner, system) -> {
+            if (!system.getScheduler().isRunning()) {
+                ConsoleUtils.printWarning("Планировщик не запущен.");
+                return;
+            }
+            system.stopScheduler();
+            ConsoleUtils.printSuccess("Планировщик остановлен.");
+        });
+
+        parser.registerCommand("scheduler-status", "Статус планировщика", (scanner, system) -> {
+            boolean running = system.getScheduler().isRunning();
+            System.out.println(running ? "Планировщик активен." : " Планировщик остановлен.");
         });
     }
 }

@@ -8,6 +8,7 @@ public class RBACSystem {
     private final AssignmentManager assignmentManager;
     private final AuditLog auditLog;
     private final BackgroundExecutor executor;
+    private final TaskScheduler scheduler;
     private String currentUser;
 
     public RBACSystem() {
@@ -16,6 +17,7 @@ public class RBACSystem {
         this.assignmentManager = new AssignmentManager();
         this.auditLog = new AuditLog();
         this.executor = BackgroundExecutor.getInstance();
+        this.scheduler = new TaskScheduler(this);
         this.currentUser = "system";
     }
 
@@ -24,12 +26,17 @@ public class RBACSystem {
     public AssignmentManager getAssignmentManager() { return assignmentManager; }
     public AuditLog getAuditLog() { return auditLog; }
     public BackgroundExecutor getExecutor() { return executor; }
+    public TaskScheduler getScheduler() { return scheduler; }
 
     public void setCurrentUser(String username) { this.currentUser = username; }
     public String getCurrentUser() { return currentUser; }
 
+    public void startScheduler(long intervalSeconds) { scheduler.start(intervalSeconds); }
+    public void stopScheduler() { scheduler.stop(); }
+
     public void initialize() {
         auditLog.log("SYSTEM_INIT", "system", "RBAC", "Инициализация системы");
+
         Permission readUsers = new Permission("READ", "users", "Просмотр пользователей");
         Permission writeUsers = new Permission("WRITE", "users", "Редактирование пользователей");
         Permission deleteUsers = new Permission("DELETE", "users", "Удаление пользователей");
@@ -67,7 +74,7 @@ public class RBACSystem {
     // асинхронная генерация отчёта
     public void generateUserReportAsync(String filename) {
         executor.submit(() -> {
-            System.out.println("Генерация отчёта в фоне...");
+            System.out.println("⏳ Генерация отчёта в фоне...");
             ReportGenerator gen = new ReportGenerator();
             String report = gen.generateUserReport(userManager, assignmentManager);
             gen.exportToFile(report, filename);
@@ -78,7 +85,7 @@ public class RBACSystem {
     // асинхронное сохранение данных
     public void saveDataAsync(String filename) {
         executor.submit(() -> {
-            System.out.println("Сохранение данных в фоне...");
+            System.out.println("⏳ Сохранение данных в фоне...");
             try (java.io.PrintWriter out = new java.io.PrintWriter(new java.io.FileWriter(filename))) {
                 out.println("USERS: " + userManager.count());
                 out.println("ROLES: " + roleManager.count());
