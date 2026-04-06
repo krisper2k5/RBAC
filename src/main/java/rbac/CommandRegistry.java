@@ -11,6 +11,7 @@ public class CommandRegistry {
         registerPermissionCommands(parser);
         registerReportCommands(parser);  // ← ДОБАВЛЕНО!
         registerServiceCommands(parser);
+        registerAsyncCommands(parser);
     }
 
     private static void registerUserCommands(CommandParser parser) {
@@ -320,6 +321,28 @@ public class CommandRegistry {
             }
             ConsoleUtils.printSuccess("Выход из программы...");
             System.exit(0);
+        });
+    }
+
+    private static void registerAsyncCommands(CommandParser parser) {
+        parser.registerCommand("report-users-async", "Генерация отчёта по пользователям в фоне", (scanner, system) -> {
+            String filename = ConsoleUtils.promptString("Имя файла для отчёта", true);
+            system.generateUserReportAsync(filename);
+            ConsoleUtils.printSuccess("Задача на генерацию отчёта добавлена в очередь.");
+        });
+
+        parser.registerCommand("save-async", "Сохранение данных системы в файл в фоне", (scanner, system) -> {
+            String filename = ConsoleUtils.promptString("Имя файла для бэкапа", true);
+            system.saveDataAsync(filename);
+            ConsoleUtils.printSuccess("Задача на сохранение данных добавлена в очередь.");
+        });
+
+        parser.registerCommand("log-async", "Добавить запись в аудит через очередь", (scanner, system) -> {
+            String action = ConsoleUtils.promptString("Действие", true);
+            String target = ConsoleUtils.promptString("Цель", true);
+            String details = ConsoleUtils.promptString("Детали", false);
+            system.getAuditLog().logAsync(action, system.getCurrentUser(), target, details);
+            ConsoleUtils.printSuccess("Запись добавлена в очередь аудита.");
         });
     }
 }
