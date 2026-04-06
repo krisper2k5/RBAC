@@ -15,27 +15,25 @@ public class ReportGenerator {
             return sb.toString();
         }
 
-        List<String[]> rows = new ArrayList<>();
-        for (User user : users) {
-            List<RoleAssignment> assignments = assignmentManager.findByUser(user);
-            String roles = assignments.isEmpty() ? "не назначено" :
-                    assignments.stream()
-                            .map(a -> a.role().name())
-                            .collect(Collectors.joining(", "));
-
-            rows.add(new String[] {
-                    user.username(),
-                    user.fullName(),
-                    user.email(),
-                    roles
-            });
-        }
+        // генерация строк отчёта
+        List<String[]> rows = users.parallelStream()
+                .map(user -> {
+                    List<RoleAssignment> assignments = assignmentManager.findByUser(user);
+                    String roles = assignments.isEmpty() ? "не назначено" :
+                            assignments.stream()
+                                    .map(a -> a.role().name())
+                                    .collect(Collectors.joining(", "));
+                    return new String[] {
+                            user.username(),
+                            user.fullName(),
+                            user.email(),
+                            roles
+                    };
+                })
+                .collect(Collectors.toList());
 
         sb.append(FormatUtils.formatTable(
-                new String[] {"Username", "Full Name", "Email", "Роли"},
-                rows
-        ));
-
+                new String[] { "Username", "Full Name", "Email", "Роли" }, rows));
         return sb.toString();
     }
 
@@ -61,10 +59,7 @@ public class ReportGenerator {
         }
 
         sb.append(FormatUtils.formatTable(
-                new String[] {"Роль", "Пользователей", "Прав", "Описание"},
-                rows
-        ));
-
+                new String[] { "Роль", "Пользователей", "Прав", "Описание" }, rows));
         return sb.toString();
     }
 
@@ -72,47 +67,49 @@ public class ReportGenerator {
         StringBuilder sb = new StringBuilder();
         sb.append(FormatUtils.formatHeader("МАТРИЦА ПРАВ ДОСТУПА"));
 
-        Set<String> resources = new TreeSet<>();
-        for (User user : userManager.findAll()) {
-            for (Permission p : assignmentManager.getUserPermissions(user)) {
-                resources.add(p.resource());
-            }
-        }
+        // сбор уникальных ресурсов
+        Set<String> resources = userManager.findAll().parallelStream()
+                .flatMap(user -> assignmentManager.getUserPermissions(user).stream())
+                .map(Permission::resource)
+                .collect(Collectors.toConcurrentSet());
 
         if (resources.isEmpty()) {
             sb.append("Права доступа не найдены.\n");
             return sb.toString();
         }
 
-        List<String[]> rows = new ArrayList<>();
-        for (User user : userManager.findAll()) {
-            Set<Permission> perms = assignmentManager.getUserPermissions(user);
-            List<String> row = new ArrayList<>();
-            row.add(user.username());
+        List<String> sortedResources = new ArrayList<>(resources);
+        Collections.sort(sortedResources);
 
-            for (String res : resources) {
-                boolean hasRead = perms.stream().anyMatch(p ->
-                        p.resource().equals(res) && p.name().equals("READ"));
-                boolean hasWrite = perms.stream().anyMatch(p ->
-                        p.resource().equals(res) && p.name().equals("WRITE"));
+        // генерация строк матрицы
+        List<String[]> rows = userManager.findAll().parallelStream()
+                .map(user -> {
+                    Set<Permission> perms = assignmentManager.getUserPermissions(user);
+                    List<String> row = new ArrayList<>();
+                    row.add(user.username());
 
-                if (hasRead && hasWrite) row.add("R+W");
-                else if (hasRead) row.add("R");
-                else if (hasWrite) row.add("W");
-                else row.add("-");
-            }
-            rows.add(row.toArray(new String[0]));
-        }
+                    for (String res : sortedResources) {
+                        boolean hasRead = perms.stream().anyMatch(p ->
+                                p.resource().equals(res) && p.name().equals("READ"));
+                        boolean hasWrite = perms.stream().anyMatch(p ->
+                                p.resource().equals(res) && p.name().equals("WRITE"));
 
-        String[] headers = new String[resources.size() + 1];
+                        if (hasRead && hasWrite) row.add("R+W");
+                        else if (hasRead) row.add("R");
+                        else if (hasWrite) row.add("W");
+                        else row.add("-");
+                    }
+                    return row.toArray(new String[0]);
+                })
+                .collect(Collectors.toList());
+
+        String[] headers = new String[sortedResources.size() + 1];
         headers[0] = "Пользователь";
-        int i = 1;
-        for (String res : resources) {
-            headers[i++] = res.toUpperCase();
+        for (int i = 0; i < sortedResources.size(); i++) {
+            headers[i + 1] = sortedResources.get(i).toUpperCase();
         }
 
         sb.append(FormatUtils.formatTable(headers, rows));
-
         return sb.toString();
     }
 
