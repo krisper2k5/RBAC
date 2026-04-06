@@ -1,9 +1,10 @@
 package rbac;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class CommandParser {
-    private final Map<String, Command> commands = new HashMap<>();
-    private final Map<String, String> commandDescriptions = new HashMap<>();
+    private final Map<String, Command> commands = new ConcurrentHashMap<>();
+    private final Map<String, String> commandDescriptions = new ConcurrentHashMap<>();
 
     public void registerCommand(String name, String description, Command command) {
         commands.put(name.toLowerCase(), command);
@@ -36,13 +37,9 @@ public class CommandParser {
     }
 
     public void parseAndExecute(String input, Scanner scanner, RBACSystem system) {
-        if (input == null || input.trim().isEmpty()) {
-            return;
-        }
-
+        if (input == null || input.trim().isEmpty()) return;
         String[] parts = input.trim().split("\\s+", 2);
         String commandName = parts[0];
-
         executeCommand(commandName, scanner, system);
     }
 }

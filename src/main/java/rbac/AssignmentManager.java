@@ -1,10 +1,11 @@
 package rbac;
-
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class AssignmentManager implements Repository<RoleAssignment> {
-    private final Map<String, RoleAssignment> assignments = new HashMap<>();
+    private final Map<String, RoleAssignment> assignments = new ConcurrentHashMap<>();
+    private final Object assignmentLock = new Object();
 
     @Override
     public void add(RoleAssignment assignment) {
@@ -95,19 +96,25 @@ public class AssignmentManager implements Repository<RoleAssignment> {
     }
 
     public void revokeAssignment(String assignmentId) {
-        RoleAssignment assignment = assignments.get(assignmentId);
-        if (assignment instanceof PermanentAssignment pa) {
-            pa.revoke();
-        } else {
-            assignments.remove(assignmentId);
+        synchronized (assignmentLock) {
+            RoleAssignment assignment = assignments.get(assignmentId);
+            if (assignment == null) return;
+            if (assignment instanceof PermanentAssignment pa) {
+                pa.revoke();
+            } else {
+                assignments.remove(assignmentId);
+            }
         }
     }
 
     public void extendTemporaryAssignment(String assignmentId, String newExpirationDate) {
-        RoleAssignment assignment = assignments.get(assignmentId);
-        if (!(assignment instanceof TemporaryAssignment ta)) {
-            throw new IllegalArgumentException("Назначение не является временным");
+        synchronized (assignmentLock) {
+            RoleAssignment assignment = assignments.get(assignmentId);
+            if (assignment == null) return;
+            if (!(assignment instanceof TemporaryAssignment ta)) {
+                throw new IllegalArgumentException("Назначение не является временным");
+            }
+            ta.extend(newExpirationDate);
         }
-        ta.extend(newExpirationDate);
     }
 }

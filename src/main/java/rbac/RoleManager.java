@@ -1,25 +1,30 @@
 package rbac;
-
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class RoleManager implements Repository<Role> {
-    private final Map<String, Role> rolesById = new HashMap<>();
-    private final Map<String, Role> rolesByName = new HashMap<>();
+    private final Map<String, Role> rolesById = new ConcurrentHashMap<>();
+    private final Map<String, Role> rolesByName = new ConcurrentHashMap<>();
+    private final Object roleLock = new Object();
 
     @Override
     public void add(Role role) {
-        if (rolesByName.containsKey(role.name())) {
-            throw new IllegalArgumentException("Роль с таким именем уже существует");
+        synchronized (roleLock) {
+            if (rolesByName.containsKey(role.name())) {
+                throw new IllegalArgumentException("Роль с таким именем уже существует");
+            }
+            rolesById.put(role.id(), role);
+            rolesByName.put(role.name(), role);
         }
-        rolesById.put(role.id(), role);
-        rolesByName.put(role.name(), role);
     }
 
     @Override
     public boolean remove(Role role) {
-        rolesByName.remove(role.name());
-        return rolesById.remove(role.id()) != null;
+        synchronized (roleLock) {
+            rolesByName.remove(role.name());
+            return rolesById.remove(role.id()) != null;
+        }
     }
 
     @Override
@@ -46,8 +51,10 @@ public class RoleManager implements Repository<Role> {
 
     @Override
     public void clear() {
-        rolesById.clear();
-        rolesByName.clear();
+        synchronized (roleLock) {
+            rolesById.clear();
+            rolesByName.clear();
+        }
     }
 
     public Optional<Role> findByName(String name) {
@@ -66,17 +73,13 @@ public class RoleManager implements Repository<Role> {
 
     public void addPermissionToRole(String roleName, Permission permission) {
         Role role = rolesByName.get(roleName);
-        if (role == null) {
-            throw new IllegalArgumentException("Роль не найдена");
-        }
+        if (role == null) throw new IllegalArgumentException("Роль не найдена");
         role.addPermission(permission);
     }
 
     public void removePermissionFromRole(String roleName, Permission permission) {
         Role role = rolesByName.get(roleName);
-        if (role == null) {
-            throw new IllegalArgumentException("Роль не найдена");
-        }
+        if (role == null) throw new IllegalArgumentException("Роль не найдена");
         role.removePermission(permission);
     }
 

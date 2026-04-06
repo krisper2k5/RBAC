@@ -1,10 +1,10 @@
 package rbac;
-
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class UserManager implements Repository<User> {
-    private final Map<String, User> users = new HashMap<>();
+    private final Map<String, User> users = new ConcurrentHashMap<>();
 
     @Override
     public void add(User user) {
@@ -71,7 +71,6 @@ public class UserManager implements Repository<User> {
         if (user == null) {
             throw new IllegalArgumentException("Пользователь не найден");
         }
-        User updatedUser = new User(username, newFullName, newEmail);
-        users.put(username, updatedUser);
+        users.put(username, new User(username, newFullName, newEmail));
     }
 }
