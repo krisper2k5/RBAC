@@ -71,7 +71,7 @@ public class ReportGenerator {
         Set<String> resources = userManager.findAll().parallelStream()
                 .flatMap(user -> assignmentManager.getUserPermissions(user).stream())
                 .map(Permission::resource)
-                .collect(Collectors.toConcurrentSet());
+                .collect(Collectors.toSet());
 
         if (resources.isEmpty()) {
             sb.append("Права доступа не найдены.\n");
