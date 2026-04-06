@@ -1,7 +1,5 @@
 Заупстить main -> help -> Далее мы увидим все доступные действия:
 
-Lab 3, Lab 4
-
 assign-role               - Назначить роль пользователю  
 assignment-active         - Активные назначения  
 assignment-expired        - Истёкшие временные назначения  
@@ -33,3 +31,38 @@ user-list                 - Вывести список всех пользов�
 user-search               - Поиск пользователей по фильтрам  
 user-update               - Обновить данные пользователя  
 user-view                 - Просмотр информации о пользователе  
+
+
+## Основные действия:
+
+### Пользователи
+#### user-list, user-create, user-view, user-delete  
+Управление учётными записями  
+
+### Роли
+#### role-list, role-create, role-delete, role-view  
+Управление ролями и правами  
+
+### Назначения
+#### assign-role, revoke-role, assignment-list, assignment-active  
+Привязка ролей к пользователям  
+
+### Отчёты
+#### report-users, report-roles, report-matrix  
+Генерация ASCII-отчётов  
+
+### Аудит
+#### audit-log  
+Просмотр и сохранение лога действий  
+
+### Асинхронные
+#### report-users-async, save-async, log-async  
+Фоновое выполнение без блокировки UI  
+
+### Планировщик
+#### scheduler-start <сек>, scheduler-stop, scheduler-status  
+Автоочистка истёкших назначений и лог статистики  
+
+### Сервисные
+#### help, stats, clear, exit  
+Справка, статистика, выход  
