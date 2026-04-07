@@ -1,11 +1,17 @@
-name:  RBAC - Full Test CI
+---
+name: RBAC CI/CD Pipeline
 
-on:
+'on':
   push:
-    branches: [ "dev", "main", "feature/**" ]
+    branches:
+      - dev
+      - main
+      - feature/**
   pull_request:
-    branches: [ "dev", "main" ]
-  workflow_dispatch:
+    branches:
+      - dev
+      - main
+  'workflow_dispatch':
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -17,11 +23,12 @@ env:
 
 jobs:
   test:
-    name: Run All Tests (Java ${{ matrix.java }})
+    name: Run Tests (Java ${{ matrix.java }})
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java: [ '17' ]
+        java:
+          - '17'
       fail-fast: false
 
     steps:
@@ -32,8 +39,8 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: ${{ matrix.java }}
-          distribution: 'temurin'
-          cache: 'maven'
+          distribution: temurin
+          cache: maven
 
       - name: Cache Maven dependencies
         uses: actions/cache@v4
@@ -43,17 +50,17 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      - name: Validate & Compile
+      - name: Validate and Compile
         run: mvn -B validate compile --file pom.xml
 
       - name: Run All Unit Tests
-        run: |
-          mvn -B test \
-            -Dmaven.test.failure.ignore=false \
-            -Dsurefire.useFile=false \
-            -DtrimStackTrace=false \
-            -Djunit.jupiter.execution.parallel.enabled=true \
-            -Djunit.jupiter.execution.parallel.mode.default=concurrent
+        run: >
+          mvn -B test
+          -Dmaven.test.failure.ignore=false
+          -Dsurefire.useFile=false
+          -DtrimStackTrace=false
+          -Djunit.jupiter.execution.parallel.enabled=true
+          -Djunit.jupiter.execution.parallel.mode.default=concurrent
         env:
           CI: true
           LANG: en_US.UTF-8
@@ -63,13 +70,15 @@ jobs:
         run: |
           echo "## Test Results Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| Test Class | Tests | Passed | Failed | Status |" >> $GITHUB_STEP_SUMMARY
-          echo "|------------|-------|--------|--------|--------|" >> $GITHUB_STEP_SUMMARY
-          
+          echo "| Test Class | Tests | Passed | Failed | Status |" \
+            >> $GITHUB_STEP_SUMMARY
+          echo "|------------|-------|--------|--------|--------|" \
+            >> $GITHUB_STEP_SUMMARY
+
           total_tests=0
           total_passed=0
           total_failed=0
-          
+
           for file in target/surefire-reports/TEST-*.xml; do
             if [ -f "$file" ]; then
               name=$(basename "$file" .xml | sed 's/TEST-rbac\.//')
@@ -78,23 +87,25 @@ jobs:
               errors=$(grep -oP 'errors="\K[^"]+' "$file" | head -1 || echo "0")
               skipped=$(grep -oP 'skipped="\K[^"]+' "$file" | head -1 || echo "0")
               passed=$((tests - failures - errors - skipped))
-          
+
               total_tests=$((total_tests + tests))
               total_passed=$((total_passed + passed))
               total_failed=$((total_failed + failures + errors))
-          
+
               if [ "$failures" = "0" ] && [ "$errors" = "0" ]; then
-                status="Succes"
+                status="PASS"
               else
-                status="Fail"
+                status="FAIL"
               fi
-          
-              echo "| \`$name\` | $tests | $passed | $((failures + errors)) | $status |" >> $GITHUB_STEP_SUMMARY
+
+              echo "| $name | $tests | $passed | $((failures + errors)) | $status |" \
+                >> $GITHUB_STEP_SUMMARY
             fi
           done
-          
+
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Итого:** $total_tests тестов, $total_passed пройдено, $total_failed провалено" >> $GITHUB_STEP_SUMMARY
+          echo "**Total:** $total_tests tests, $total_passed passed, $total_failed failed" \
+            >> $GITHUB_STEP_SUMMARY
 
       - name: Upload Test Reports
         if: always()
@@ -111,7 +122,9 @@ jobs:
     name: Code Coverage (JaCoCo)
     runs-on: ubuntu-latest
     needs: test
-    if: github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main'
+    if: >
+      github.ref == 'refs/heads/dev' ||
+      github.ref == 'refs/heads/main'
 
     steps:
       - name: Checkout code
@@ -121,8 +134,8 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: '17'
-          distribution: 'temurin'
-          cache: 'maven'
+          distribution: temurin
+          cache: maven
 
       - name: Run tests with JaCoCo
         run: mvn -B jacoco:prepare-agent test jacoco:report
@@ -137,13 +150,15 @@ jobs:
       - name: Print Coverage Summary
         run: |
           if [ -f "target/site/jacoco/index.html" ]; then
-            echo "Отчёт о покрытии сгенерирован: target/site/jacoco/index.html"
+            echo "Coverage report generated: target/site/jacoco/index.html"
             if [ -f "target/site/jacoco/jacoco.xml" ]; then
-              coverage=$(grep -oP 'type="INSTRUCTION" covered="\K[^"]+' target/site/jacoco/jacoco.xml | head -1)
-              total=$(grep -oP 'type="INSTRUCTION" missed="\K[^"]+' target/site/jacoco/jacoco.xml | head -1)
+              coverage=$(grep -oP 'type="INSTRUCTION" covered="\K[^"]+' \
+                target/site/jacoco/jacoco.xml | head -1)
+              total=$(grep -oP 'type="INSTRUCTION" missed="\K[^"]+' \
+                target/site/jacoco/jacoco.xml | head -1)
               if [ -n "$coverage" ] && [ -n "$total" ]; then
                 percent=$((coverage * 100 / (coverage + total)))
-                echo "Общее покрытие инструкциями: ~$percent%"
+                echo "Coverage: ~$percent%"
               fi
             fi
           fi
@@ -152,7 +167,9 @@ jobs:
     name: Build JAR Artifact
     runs-on: ubuntu-latest
     needs: test
-    if: github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main'
+    if: >
+      github.ref == 'refs/heads/dev' ||
+      github.ref == 'refs/heads/main'
 
     steps:
       - name: Checkout code
@@ -162,8 +179,8 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: '17'
-          distribution: 'temurin'
-          cache: 'maven'
+          distribution: temurin
+          cache: maven
 
       - name: Build executable JAR
         run: mvn -B clean package -DskipTests
@@ -178,14 +195,17 @@ jobs:
   summary:
     name: Pipeline Summary
     runs-on: ubuntu-latest
-    needs: [test, coverage, build]
+    needs:
+      - test
+      - coverage
+      - build
     if: always()
 
     steps:
       - name: Print Final Summary
         run: |
           echo "--------------------------------------------"
-          echo "     RBAC CI Pipeline Completed"
+          echo "   RBAC CI Pipeline Completed"
           echo "--------------------------------------------"
           echo ""
           echo "  Branch: ${{ github.ref_name }}"
@@ -197,14 +217,10 @@ jobs:
           echo "  Coverage:   ${{ needs.coverage.result }}"
           echo "  Build:      ${{ needs.build.result }}"
           echo ""
-          echo "  View artifacts:"
-          echo "     • Test reports: Actions → Latest run → Artifacts"
-          echo "     • Coverage:     Actions → Latest run → Artifacts → coverage-report"
-          echo "     • JAR file:     Actions → Latest run → Artifacts → rbac-application"
-          echo ""
+          echo "  View artifacts in Actions tab"
           echo "--------------------------------------------"
           if [ "${{ needs.test.result }}" = "success" ]; then
-            echo "   ALL TESTS PASSED !"
+            echo "   ALL TESTS PASSED - Ready for merge!"
           else
             echo "   Some tests failed - Check logs above"
           fi
