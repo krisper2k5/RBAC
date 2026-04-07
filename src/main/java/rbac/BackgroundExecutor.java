@@ -16,7 +16,9 @@ public class BackgroundExecutor {
     public static BackgroundExecutor getInstance() {
         if (instance == null) {
             synchronized (BackgroundExecutor.class) {
-                if (instance == null) instance = new BackgroundExecutor();
+                if (instance == null) {
+                    instance = new BackgroundExecutor();
+                }
             }
         }
         return instance;

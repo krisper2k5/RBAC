@@ -28,11 +28,21 @@ public class RBACSystem {
     public BackgroundExecutor getExecutor() { return executor; }
     public TaskScheduler getScheduler() { return scheduler; }
 
-    public void setCurrentUser(String username) { this.currentUser = username; }
-    public String getCurrentUser() { return currentUser; }
+    public void setCurrentUser(String username) {
+        this.currentUser = username;
+    }
 
-    public void startScheduler(long intervalSeconds) { scheduler.start(intervalSeconds); }
-    public void stopScheduler() { scheduler.stop(); }
+    public String getCurrentUser() {
+        return currentUser;
+    }
+
+    public void startScheduler(long intervalSeconds) {
+        scheduler.start(intervalSeconds);
+    }
+
+    public void stopScheduler() {
+        scheduler.stop();
+    }
 
     public void initialize() {
         auditLog.log("SYSTEM_INIT", "system", "RBAC", "Инициализация системы");
@@ -46,18 +56,26 @@ public class RBACSystem {
         Permission writeSettings = new Permission("WRITE", "settings", "Изменение настроек");
 
         Role admin = new Role("Admin", "Полный доступ ко всем функциям системы");
-        admin.addPermission(readUsers); admin.addPermission(writeUsers); admin.addPermission(deleteUsers);
-        admin.addPermission(readReports); admin.addPermission(writeReports);
-        admin.addPermission(readSettings); admin.addPermission(writeSettings);
+        admin.addPermission(readUsers);
+        admin.addPermission(writeUsers);
+        admin.addPermission(deleteUsers);
+        admin.addPermission(readReports);
+        admin.addPermission(writeReports);
+        admin.addPermission(readSettings);
+        admin.addPermission(writeSettings);
         roleManager.add(admin);
 
         Role manager = new Role("Manager", "Управление отчётами и пользователями");
-        manager.addPermission(readUsers); manager.addPermission(writeUsers);
-        manager.addPermission(readReports); manager.addPermission(writeReports);
+        manager.addPermission(readUsers);
+        manager.addPermission(writeUsers);
+        manager.addPermission(readReports);
+        manager.addPermission(writeReports);
         roleManager.add(manager);
 
         Role viewer = new Role("Viewer", "Только для чтения");
-        viewer.addPermission(readUsers); viewer.addPermission(readReports); viewer.addPermission(readSettings);
+        viewer.addPermission(readUsers);
+        viewer.addPermission(readReports);
+        viewer.addPermission(readSettings);
         roleManager.add(viewer);
 
         User adminUser = User.validate("admin", "Администратор Системы", "admin@company.com");
@@ -71,10 +89,9 @@ public class RBACSystem {
         setCurrentUser("admin");
     }
 
-    // асинхронная генерация отчёта
     public void generateUserReportAsync(String filename) {
         executor.submit(() -> {
-            System.out.println("⏳ Генерация отчёта в фоне...");
+            System.out.println(" Генерация отчёта в фоне...");
             ReportGenerator gen = new ReportGenerator();
             String report = gen.generateUserReport(userManager, assignmentManager);
             gen.exportToFile(report, filename);
@@ -82,10 +99,9 @@ public class RBACSystem {
         });
     }
 
-    // асинхронное сохранение данных
     public void saveDataAsync(String filename) {
         executor.submit(() -> {
-            System.out.println("⏳ Сохранение данных в фоне...");
+            System.out.println(" Сохранение данных в фоне...");
             try (java.io.PrintWriter out = new java.io.PrintWriter(new java.io.FileWriter(filename))) {
                 out.println("USERS: " + userManager.count());
                 out.println("ROLES: " + roleManager.count());

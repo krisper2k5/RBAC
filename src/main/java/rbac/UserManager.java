@@ -6,20 +6,46 @@ import java.util.stream.Collectors;
 public class UserManager implements Repository<User> {
     private final Map<String, User> users = new ConcurrentHashMap<>();
 
-    @Override public void add(User user) {
-        if (users.containsKey(user.username())) throw new IllegalArgumentException("Пользователь с таким username уже существует");
+    @Override
+    public void add(User user) {
+        if (users.containsKey(user.username())) {
+            throw new IllegalArgumentException("Пользователь с таким username уже существует");
+        }
         users.put(user.username(), user);
     }
-    @Override public boolean remove(User user) { return users.remove(user.username()) != null; }
-    @Override public Optional<User> findById(String id) { return Optional.ofNullable(users.get(id)); }
-    @Override public List<User> findAll() { return new ArrayList<>(users.values()); }
-    @Override public int count() { return users.size(); }
-    @Override public void clear() { users.clear(); }
 
-    public Optional<User> findByUsername(String username) { return Optional.ofNullable(users.get(username)); }
+    @Override
+    public boolean remove(User user) {
+        return users.remove(user.username()) != null;
+    }
+
+    @Override
+    public Optional<User> findById(String id) {
+        return Optional.ofNullable(users.get(id));
+    }
+
+    @Override
+    public List<User> findAll() {
+        return new ArrayList<>(users.values());
+    }
+
+    @Override
+    public int count() {
+        return users.size();
+    }
+
+    @Override
+    public void clear() {
+        users.clear();
+    }
+
+    public Optional<User> findByUsername(String username) {
+        return Optional.ofNullable(users.get(username));
+    }
+
     public Optional<User> findByEmail(String email) {
         return users.values().stream()
-                .filter(u -> u.email().equalsIgnoreCase(email))
+                .filter(user -> user.email().equalsIgnoreCase(email))
                 .findFirst();
     }
 
@@ -42,11 +68,15 @@ public class UserManager implements Repository<User> {
                 .collect(Collectors.toList());
     }
 
-    public boolean exists(String username) { return users.containsKey(username); }
+    public boolean exists(String username) {
+        return users.containsKey(username);
+    }
 
     public void update(String username, String newFullName, String newEmail) {
         User user = users.get(username);
-        if (user == null) throw new IllegalArgumentException("Пользователь не найден");
+        if (user == null) {
+            throw new IllegalArgumentException("Пользователь не найден");
+        }
         users.put(username, new User(username, newFullName, newEmail));
     }
 }

@@ -9,7 +9,7 @@ public class CommandRegistry {
         registerRoleCommands(parser);
         registerAssignmentCommands(parser);
         registerPermissionCommands(parser);
-        registerReportCommands(parser);  // ← ДОБАВЛЕНО!
+        registerReportCommands(parser);
         registerServiceCommands(parser);
         registerAsyncCommands(parser);
         registerSchedulerCommands(parser);

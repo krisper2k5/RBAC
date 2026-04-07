@@ -1,7 +1,5 @@
 package rbac;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 public class TaskScheduler {
     private final ScheduledExecutorService scheduler;
@@ -42,10 +40,9 @@ public class TaskScheduler {
 
     private void runStatsLogTask() {
         try {
-            String stats = system.generateStatistics();
-            system.getAuditLog().logAsync("STATS_REPORT", "system", "RBAC", "Периодический отчёт статистики сформирован");
+            system.getAuditLog().logAsync("STATS_REPORT", "system", "RBAC", "Периодический отчёт статистики");
         } catch (Exception e) {
-            System.err.println("Ошибка задачи логирования статистики: " + e.getMessage());
+            System.err.println("Ошибка задачи логирования: " + e.getMessage());
         }
     }
 
@@ -61,7 +58,7 @@ public class TaskScheduler {
             scheduler.shutdownNow();
             Thread.currentThread().interrupt();
         }
-        system.getAuditLog().log("SCHEDULER_STOP", "system", "TaskScheduler", "Остановлен планировщик задач");
+        system.getAuditLog().log("SCHEDULER_STOP", "system", "TaskScheduler", "Остановлен планировщик");
     }
 
     public boolean isRunning() {

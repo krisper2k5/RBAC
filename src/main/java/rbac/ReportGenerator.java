@@ -4,7 +4,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class ReportGenerator {
-
     public String generateUserReport(UserManager userManager, AssignmentManager assignmentManager) {
         StringBuilder sb = new StringBuilder();
         sb.append(FormatUtils.formatHeader("ОТЧЁТ ПО ПОЛЬЗОВАТЕЛЯМ"));
@@ -15,7 +14,6 @@ public class ReportGenerator {
             return sb.toString();
         }
 
-        // генерация строк отчёта
         List<String[]> rows = users.parallelStream()
                 .map(user -> {
                     List<RoleAssignment> assignments = assignmentManager.findByUser(user);
@@ -67,7 +65,6 @@ public class ReportGenerator {
         StringBuilder sb = new StringBuilder();
         sb.append(FormatUtils.formatHeader("МАТРИЦА ПРАВ ДОСТУПА"));
 
-        // сбор уникальных ресурсов
         Set<String> resources = userManager.findAll().parallelStream()
                 .flatMap(user -> assignmentManager.getUserPermissions(user).stream())
                 .map(Permission::resource)
@@ -81,7 +78,6 @@ public class ReportGenerator {
         List<String> sortedResources = new ArrayList<>(resources);
         Collections.sort(sortedResources);
 
-        // генерация строк матрицы
         List<String[]> rows = userManager.findAll().parallelStream()
                 .map(user -> {
                     Set<Permission> perms = assignmentManager.getUserPermissions(user);
