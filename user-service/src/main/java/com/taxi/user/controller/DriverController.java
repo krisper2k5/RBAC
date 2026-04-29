@@ -1,5 +1,4 @@
 package com.taxi.user.controller;
-
 import com.taxi.common.dto.DriverDto;
 import com.taxi.common.dto.DriverResponseDto;
 import com.taxi.common.enums.DriverStatus;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/drivers")
 @RequiredArgsConstructor
 public class DriverController {
-
     private final DriverService driverService;
 
     @PostMapping
@@ -37,14 +35,12 @@ public class DriverController {
         return ResponseEntity.ok(toDto(driver));
     }
 
-    // Внутренний API для Trip Service
     @GetMapping("/available/first")
     public ResponseEntity<DriverResponseDto> findAvailableDriver() {
         Driver driver = driverService.findAndReserveAvailableDriver();
         return ResponseEntity.ok(toDto(driver));
     }
 
-    // Helper method для маппинга
     private DriverResponseDto toDto(Driver driver) {
         DriverResponseDto dto = new DriverResponseDto();
         dto.setId(driver.getId());

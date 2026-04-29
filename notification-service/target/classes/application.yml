@@ -11,7 +11,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create-drop
-    show-sql: true
+    show-sql: false #true, если хотим видеть спам
     properties:
       hibernate:
         format_sql: true
