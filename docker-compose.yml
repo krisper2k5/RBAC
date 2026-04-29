@@ -1,7 +1,6 @@
 version: '3.8'
 
 services:
-  # ️ PostgreSQL: основная БД для всех сервисов + табличная очередь уведомлений
   postgres:
     image: postgres:16-alpine
     container_name: taxi-postgres
@@ -21,7 +20,6 @@ services:
     networks:
       - taxi-network
 
-  # 🔴 Redis: кэш списка доступных водителей
   redis:
     image: redis:7-alpine
     container_name: taxi-redis
@@ -37,7 +35,6 @@ services:
     networks:
       - taxi-network
 
-  # 👤 User Service: пассажиры и водители
   user-service:
     build:
       context: .
@@ -61,7 +58,6 @@ services:
     networks:
       - taxi-network
 
-  # 🚗 Trip Service: поездки, атомарное назначение, статистика
   trip-service:
     build:
       context: .
@@ -87,7 +83,6 @@ services:
     networks:
       - taxi-network
 
-  # 📢 Notification Service: фоновые воркеры, табличная очередь
   notification-service:
     build:
       context: .
