@@ -44,7 +44,7 @@ public class DriverController {
         return ResponseEntity.ok(toDto(driver));
     }
 
-    // Helper method для маппинга Entity → DTO
+    // Helper method для маппинга
     private DriverResponseDto toDto(Driver driver) {
         DriverResponseDto dto = new DriverResponseDto();
         dto.setId(driver.getId());

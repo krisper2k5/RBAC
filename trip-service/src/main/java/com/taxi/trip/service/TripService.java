@@ -35,15 +35,12 @@ public class TripService {
         trip.setStatus(TripStatus.CREATED);
 
         try {
-            // Быстрая проверка кэша (не заменяет атомарное назначение в БД)
             Boolean hasAvailable = redisTemplate.hasKey(AVAILABLE_DRIVERS_KEY);
 
-            // Атомарное назначение через User Service (БД + FOR UPDATE SKIP LOCKED)
             var driver = userClient.findAvailableDriver();
             trip.setDriverId(driver.getId());
             trip.setStatus(TripStatus.ASSIGNED);
 
-            // User Service уже удалил водителя из Redis при смене статуса на BUSY
         } catch (Exception e) {
             trip.setStatus(TripStatus.CREATED); // Нет доступных водителей
         }

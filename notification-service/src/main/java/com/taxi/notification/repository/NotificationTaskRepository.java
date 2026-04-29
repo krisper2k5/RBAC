@@ -12,7 +12,7 @@ import java.util.Optional;
 @Repository
 public interface NotificationTaskRepository extends JpaRepository<NotificationTask, Long> {
 
-    // Атомарный захват задачи: только одна транзакция получит задачу
+    // только одна транзакция получит задачу
     @Query(value = """
         SELECT * FROM notification_tasks 
         WHERE status = 'PENDING' 

@@ -53,18 +53,16 @@ public class DriverService {
 
     @Transactional
     public Driver findAndReserveAvailableDriver() {
-        // Атомарный захват через БД (FOR UPDATE SKIP LOCKED)
         return driverRepository.findFirstAvailableDriver()
                 .map(driver -> {
                     driver.setStatus(DriverStatus.BUSY);
-                    // Удаляем из Redis, так как водитель теперь занят
                     redisTemplate.opsForSet().remove(AVAILABLE_DRIVERS_KEY, String.valueOf(driver.getId()));
                     return driver;
                 })
                 .orElseThrow(() -> new RuntimeException("No available drivers"));
     }
 
-    // Метод для инициализации кэша при старте (опционально)
+    // Инициализации кэша при старте
     @Transactional
     public void syncAvailableDriversCache() {
         Set<String> availableIds = driverRepository.findAll().stream()
