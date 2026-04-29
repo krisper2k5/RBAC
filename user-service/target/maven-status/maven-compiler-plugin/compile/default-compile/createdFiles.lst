@@ -1,0 +1,9 @@
+com/taxi/user/entity/Driver.class
+com/taxi/user/controller/PassengerController.class
+com/taxi/user/service/PassengerService.class
+com/taxi/user/controller/DriverController.class
+com/taxi/user/repository/DriverRepository.class
+com/taxi/user/service/DriverService.class
+com/taxi/user/entity/Passenger.class
+com/taxi/user/UserApplication.class
+com/taxi/user/repository/PassengerRepository.class

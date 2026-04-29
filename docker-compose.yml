@@ -1,0 +1,117 @@
+version: '3.8'
+
+services:
+  # ️ PostgreSQL: основная БД для всех сервисов + табличная очередь уведомлений
+  postgres:
+    image: postgres:16-alpine
+    container_name: taxi-postgres
+    environment:
+      POSTGRES_DB: taxi_db
+      POSTGRES_USER: taxi_user
+      POSTGRES_PASSWORD: taxi_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U taxi_user -d taxi_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - taxi-network
+
+  # 🔴 Redis: кэш списка доступных водителей
+  redis:
+    image: redis:7-alpine
+    container_name: taxi-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - taxi-network
+
+  # 👤 User Service: пассажиры и водители
+  user-service:
+    build:
+      context: .
+      dockerfile: user-service/Dockerfile
+    container_name: taxi-user-service
+    ports:
+      - "8081:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/taxi_db
+      SPRING_DATASOURCE_USERNAME: taxi_user
+      SPRING_DATASOURCE_PASSWORD: taxi_password
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SERVER_PORT: 8080
+    networks:
+      - taxi-network
+
+  # 🚗 Trip Service: поездки, атомарное назначение, статистика
+  trip-service:
+    build:
+      context: .
+      dockerfile: trip-service/Dockerfile
+    container_name: taxi-trip-service
+    ports:
+      - "8082:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      user-service:
+        condition: service_started
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/taxi_db
+      SPRING_DATASOURCE_USERNAME: taxi_user
+      SPRING_DATASOURCE_PASSWORD: taxi_password
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
+      USER_SERVICE_URL: http://user-service:8080
+      SERVER_PORT: 8080
+    networks:
+      - taxi-network
+
+  # 📢 Notification Service: фоновые воркеры, табличная очередь
+  notification-service:
+    build:
+      context: .
+      dockerfile: notification-service/Dockerfile
+    container_name: taxi-notification-service
+    ports:
+      - "8083:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/taxi_db
+      SPRING_DATASOURCE_USERNAME: taxi_user
+      SPRING_DATASOURCE_PASSWORD: taxi_password
+      APP_WORKER_POOL_SIZE: 4
+      APP_WORKER_MAX_RETRIES: 3
+      SERVER_PORT: 8080
+    networks:
+      - taxi-network
+
+networks:
+  taxi-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:

@@ -1,0 +1,9 @@
+com/taxi/common/dto/NotificationTaskDto.class
+com/taxi/common/enums/DriverStatus.class
+com/taxi/common/enums/NotificationStatus.class
+com/taxi/common/dto/PassengerDto.class
+com/taxi/common/dto/DriverDto.class
+com/taxi/common/dto/DriverResponseDto.class
+com/taxi/common/enums/TripStatus.class
+com/taxi/common/dto/TripDto.class
+com/taxi/common/enums/RecipientType.class

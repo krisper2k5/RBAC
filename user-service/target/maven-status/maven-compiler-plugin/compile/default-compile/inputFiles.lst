@@ -1,0 +1,9 @@
+/mnt/c/Users/Mi/OpenideProjects/RBAC/user-service/src/main/java/com/taxi/user/entity/Driver.java
+/mnt/c/Users/Mi/OpenideProjects/RBAC/user-service/src/main/java/com/taxi/user/controller/DriverController.java
+/mnt/c/Users/Mi/OpenideProjects/RBAC/user-service/src/main/java/com/taxi/user/UserApplication.java
+/mnt/c/Users/Mi/OpenideProjects/RBAC/user-service/src/main/java/com/taxi/user/service/PassengerService.java
+/mnt/c/Users/Mi/OpenideProjects/RBAC/user-service/src/main/java/com/taxi/user/service/DriverService.java
+/mnt/c/Users/Mi/OpenideProjects/RBAC/user-service/src/main/java/com/taxi/user/repository/PassengerRepository.java
+/mnt/c/Users/Mi/OpenideProjects/RBAC/user-service/src/main/java/com/taxi/user/controller/PassengerController.java
+/mnt/c/Users/Mi/OpenideProjects/RBAC/user-service/src/main/java/com/taxi/user/entity/Passenger.java
+/mnt/c/Users/Mi/OpenideProjects/RBAC/user-service/src/main/java/com/taxi/user/repository/DriverRepository.java

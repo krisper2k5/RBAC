@@ -1,0 +1,6 @@
+com/taxi/trip/client/UserClient.class
+com/taxi/trip/service/TripService.class
+com/taxi/trip/TripApplication.class
+com/taxi/trip/controller/TripController.class
+com/taxi/trip/entity/Trip.class
+com/taxi/trip/repository/TripRepository.class

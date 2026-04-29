@@ -8,8 +8,11 @@ import lombok.Data;
 public class PassengerDto {
     @NotBlank
     private String name;
-    @NotBlank @Email
+
+    @NotBlank
+    @Email
     private String email;
+
     @NotBlank
     private String phone;
 }

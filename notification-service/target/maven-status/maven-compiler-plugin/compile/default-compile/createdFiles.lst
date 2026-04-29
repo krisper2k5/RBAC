@@ -1,0 +1,5 @@
+com/taxi/notification/controller/NotificationController.class
+com/taxi/notification/repository/NotificationTaskRepository.class
+com/taxi/notification/service/NotificationTaskProcessor.class
+com/taxi/notification/entity/NotificationTask.class
+com/taxi/notification/NotificationApplication.class

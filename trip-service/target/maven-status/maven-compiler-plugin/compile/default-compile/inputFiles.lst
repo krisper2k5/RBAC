@@ -1,0 +1,6 @@
+/mnt/c/Users/Mi/OpenideProjects/RBAC/trip-service/src/main/java/com/taxi/trip/entity/Trip.java
+/mnt/c/Users/Mi/OpenideProjects/RBAC/trip-service/src/main/java/com/taxi/trip/service/TripService.java
+/mnt/c/Users/Mi/OpenideProjects/RBAC/trip-service/src/main/java/com/taxi/trip/TripApplication.java
+/mnt/c/Users/Mi/OpenideProjects/RBAC/trip-service/src/main/java/com/taxi/trip/repository/TripRepository.java
+/mnt/c/Users/Mi/OpenideProjects/RBAC/trip-service/src/main/java/com/taxi/trip/client/UserClient.java
+/mnt/c/Users/Mi/OpenideProjects/RBAC/trip-service/src/main/java/com/taxi/trip/controller/TripController.java

@@ -9,10 +9,13 @@ import lombok.Data;
 public class NotificationTaskDto {
     @NotNull
     private Long tripId;
+
     @NotNull
     private RecipientType recipientType;
+
     @NotNull
     private Long recipientId;
+
     @NotBlank
     private String message;
 }
