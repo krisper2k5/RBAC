@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TaskScheduler.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">RBAC Console System</a> &gt; <a href="index.source.html" class="el_package">rbac</a> &gt; <span class="el_source">TaskScheduler.java</span></div><h1>TaskScheduler.java</h1><pre class="source lang-java linenums">package rbac;
+import java.util.concurrent.*;
+
+public class TaskScheduler {
+    private final ScheduledExecutorService scheduler;
+    private final RBACSystem system;
+<span class="fc" id="L7">    private volatile boolean running = false;</span>
+
+<span class="fc" id="L9">    public TaskScheduler(RBACSystem system) {</span>
+<span class="fc" id="L10">        this.system = system;</span>
+<span class="fc" id="L11">        this.scheduler = Executors.newScheduledThreadPool(2, r -&gt; {</span>
+<span class="fc" id="L12">            Thread t = new Thread(r, &quot;RBAC-Scheduler&quot;);</span>
+<span class="fc" id="L13">            t.setDaemon(true);</span>
+<span class="fc" id="L14">            return t;</span>
+        });
+<span class="fc" id="L16">    }</span>
+
+    public void start(long intervalSeconds) {
+<span class="pc bpc" id="L19" title="1 of 2 branches missed.">        if (running) return;</span>
+<span class="fc" id="L20">        running = true;</span>
+
+<span class="fc" id="L22">        scheduler.scheduleAtFixedRate(this::runCleanupTask, 0, intervalSeconds, TimeUnit.SECONDS);</span>
+<span class="fc" id="L23">        scheduler.scheduleAtFixedRate(this::runStatsLogTask, intervalSeconds / 2, intervalSeconds, TimeUnit.SECONDS);</span>
+
+<span class="fc" id="L25">        system.getAuditLog().log(&quot;SCHEDULER_START&quot;, &quot;system&quot;, &quot;TaskScheduler&quot;,</span>
+                &quot;Запущен планировщик задач (интервал: &quot; + intervalSeconds + &quot;с)&quot;);
+<span class="fc" id="L27">    }</span>
+
+    private void runCleanupTask() {
+        try {
+<span class="fc" id="L31">            int cleaned = system.getAssignmentManager().cleanupExpiredTemporaryAssignments();</span>
+<span class="fc bfc" id="L32" title="All 2 branches covered.">            if (cleaned &gt; 0) {</span>
+<span class="fc" id="L33">                system.getAuditLog().logAsync(&quot;CLEANUP_EXPIRED&quot;, &quot;system&quot;, &quot;assignments&quot;,</span>
+                        &quot;Автоматически удалено истёкших назначений: &quot; + cleaned);
+            }
+<span class="nc" id="L36">        } catch (Exception e) {</span>
+<span class="nc" id="L37">            System.err.println(&quot;Ошибка задачи очистки: &quot; + e.getMessage());</span>
+<span class="fc" id="L38">        }</span>
+<span class="fc" id="L39">    }</span>
+
+    private void runStatsLogTask() {
+        try {
+<span class="fc" id="L43">            system.getAuditLog().logAsync(&quot;STATS_REPORT&quot;, &quot;system&quot;, &quot;RBAC&quot;, &quot;Периодический отчёт статистики&quot;);</span>
+<span class="nc" id="L44">        } catch (Exception e) {</span>
+<span class="nc" id="L45">            System.err.println(&quot;Ошибка задачи логирования: &quot; + e.getMessage());</span>
+<span class="fc" id="L46">        }</span>
+<span class="fc" id="L47">    }</span>
+
+    public void stop() {
+<span class="fc bfc" id="L50" title="All 2 branches covered.">        if (!running) return;</span>
+<span class="fc" id="L51">        running = false;</span>
+<span class="fc" id="L52">        scheduler.shutdown();</span>
+        try {
+<span class="pc bpc" id="L54" title="1 of 2 branches missed.">            if (!scheduler.awaitTermination(5, TimeUnit.SECONDS)) {</span>
+<span class="nc" id="L55">                scheduler.shutdownNow();</span>
+            }
+<span class="nc" id="L57">        } catch (InterruptedException e) {</span>
+<span class="nc" id="L58">            scheduler.shutdownNow();</span>
+<span class="nc" id="L59">            Thread.currentThread().interrupt();</span>
+<span class="fc" id="L60">        }</span>
+<span class="fc" id="L61">        system.getAuditLog().log(&quot;SCHEDULER_STOP&quot;, &quot;system&quot;, &quot;TaskScheduler&quot;, &quot;Остановлен планировщик&quot;);</span>
+<span class="fc" id="L62">    }</span>
+
+    public boolean isRunning() {
+<span class="fc" id="L65">        return running;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

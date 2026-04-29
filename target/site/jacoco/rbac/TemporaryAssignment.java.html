@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TemporaryAssignment.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">RBAC Console System</a> &gt; <a href="index.source.html" class="el_package">rbac</a> &gt; <span class="el_source">TemporaryAssignment.java</span></div><h1>TemporaryAssignment.java</h1><pre class="source lang-java linenums">package rbac;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+
+
+public class TemporaryAssignment extends AbstractRoleAssignment {
+<span class="fc" id="L9">    private static final DateTimeFormatter FORMATTER =</span>
+<span class="fc" id="L10">            DateTimeFormatter.ofPattern(&quot;yyyy-MM-dd HH:mm&quot;);</span>
+
+    private String expiresAt;      // Дата истечения срока
+<span class="fc" id="L13">    private boolean autoRenew = false; // Флаг автоматического продления</span>
+
+    //Конструктор времени
+    public TemporaryAssignment(User user, Role role, AssignmentMetadata metadata,
+                               String expiresAt) {
+<span class="fc" id="L18">        super(user, role, metadata);</span>
+<span class="fc" id="L19">        setExpiresAt(expiresAt);</span>
+<span class="fc" id="L20">    }</span>
+
+
+    private void setExpiresAt(String expiresAt) {
+<span class="pc bpc" id="L24" title="2 of 4 branches missed.">        if (expiresAt == null || expiresAt.trim().isEmpty()) {</span>
+<span class="nc" id="L25">            throw new IllegalArgumentException(&quot;Дата истечения не может быть пустой или null&quot;);</span>
+        }
+<span class="pc bpc" id="L27" title="1 of 2 branches missed.">        if (!expiresAt.matches(&quot;\\d{4}-\\d{2}-\\d{2}( \\d{2}:\\d{2})?&quot;)) {</span>
+<span class="nc" id="L28">            throw new IllegalArgumentException(</span>
+                    &quot;Дата истечения должна быть в формате 'ГГГГ-ММ-ДД' или 'ГГГГ-ММ-ДД ЧЧ:ММ'&quot;
+            );
+        }
+<span class="fc" id="L32">        this.expiresAt = expiresAt.trim();</span>
+<span class="fc" id="L33">    }</span>
+
+    @Override
+    public boolean isActive() {
+<span class="fc" id="L37">        LocalDateTime now = LocalDateTime.now();</span>
+<span class="fc" id="L38">        LocalDateTime expiry = parseExpiryDate();</span>
+<span class="fc" id="L39">        return now.isBefore(expiry);</span>
+    }
+
+    
+    LocalDateTime parseExpiryDate() {
+<span class="pc bpc" id="L44" title="1 of 2 branches missed.">        String dt = expiresAt.length() == 10 ? expiresAt + &quot; 23:59&quot; : expiresAt;</span>
+<span class="fc" id="L45">        return LocalDateTime.parse(dt, FORMATTER);</span>
+    }
+
+<span class="nc" id="L48">    @Override public String assignmentType() { return &quot;ВРЕМЕННОЕ&quot;; }</span>
+
+    public void extend(String newExpirationDate) {
+<span class="fc" id="L51">        setExpiresAt(newExpirationDate);</span>
+<span class="fc" id="L52">    }</span>
+
+        public boolean isExpired() {
+<span class="nc bnc" id="L55" title="All 2 branches missed.">        return !isActive();</span>
+    }
+
+    public String expiresAt() {
+<span class="fc" id="L59">        return expiresAt;</span>
+    }
+
+    public boolean autoRenew() {
+<span class="nc" id="L63">        return autoRenew;</span>
+    }
+
+    public void setAutoRenew(boolean autoRenew) {
+<span class="nc" id="L67">        this.autoRenew = autoRenew;</span>
+<span class="nc" id="L68">    }</span>
+
+    //Получение оставшегося времени до истечения
+
+    public String getTimeRemaining() {
+<span class="nc bnc" id="L73" title="All 2 branches missed.">        if (isExpired()) return &quot;Истёк&quot;;</span>
+<span class="nc" id="L74">        LocalDateTime now = LocalDateTime.now();</span>
+<span class="nc" id="L75">        LocalDateTime expiry = parseExpiryDate();</span>
+<span class="nc" id="L76">        long days = ChronoUnit.DAYS.between(now, expiry);</span>
+<span class="nc bnc" id="L77" title="All 2 branches missed.">        if (days &gt; 0) return days + &quot; дн.&quot;;</span>
+<span class="nc" id="L78">        long hours = ChronoUnit.HOURS.between(now, expiry);</span>
+<span class="nc bnc" id="L79" title="All 2 branches missed.">        if (hours &gt; 0) return hours + &quot; ч.&quot;;</span>
+<span class="nc" id="L80">        long minutes = ChronoUnit.MINUTES.between(now, expiry);</span>
+<span class="nc" id="L81">        return minutes + &quot; мин.&quot;;</span>
+    }
+
+    @Override
+    public String summary() {
+<span class="nc" id="L86">        return super.summary() +</span>
+                &quot;\nИстекает: &quot; + expiresAt +
+<span class="nc bnc" id="L88" title="All 2 branches missed.">                (autoRenew ? &quot; (автопродление включено)&quot; : &quot;&quot;) +</span>
+<span class="nc" id="L89">                &quot;\nОсталось: &quot; + getTimeRemaining();</span>
+    }
+}
+
+//1
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

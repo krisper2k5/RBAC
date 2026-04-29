@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CommandParser.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">RBAC Console System</a> &gt; <a href="index.source.html" class="el_package">rbac</a> &gt; <span class="el_source">CommandParser.java</span></div><h1>CommandParser.java</h1><pre class="source lang-java linenums">package rbac;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+
+<span class="fc" id="L5">public class CommandParser {</span>
+<span class="fc" id="L6">    private final Map&lt;String, Command&gt; commands = new ConcurrentHashMap&lt;&gt;();</span>
+<span class="fc" id="L7">    private final Map&lt;String, String&gt; commandDescriptions = new ConcurrentHashMap&lt;&gt;();</span>
+
+    public void registerCommand(String name, String description, Command command) {
+<span class="fc" id="L10">        commands.put(name.toLowerCase(), command);</span>
+<span class="fc" id="L11">        commandDescriptions.put(name.toLowerCase(), description);</span>
+<span class="fc" id="L12">    }</span>
+
+    public void executeCommand(String commandName, Scanner scanner, RBACSystem system) {
+<span class="fc" id="L15">        Command command = commands.get(commandName.toLowerCase());</span>
+<span class="fc bfc" id="L16" title="All 2 branches covered.">        if (command == null) {</span>
+<span class="fc" id="L17">            System.out.println(&quot;Неизвестная команда: &quot; + commandName);</span>
+<span class="fc" id="L18">            System.out.println(&quot;Введите 'help' для списка доступных команд.&quot;);</span>
+<span class="fc" id="L19">            return;</span>
+        }
+        try {
+<span class="fc" id="L22">            command.execute(scanner, system);</span>
+<span class="nc" id="L23">        } catch (Exception e) {</span>
+<span class="nc" id="L24">            System.out.println(&quot;Ошибка выполнения команды: &quot; + e.getMessage());</span>
+<span class="fc" id="L25">        }</span>
+<span class="fc" id="L26">    }</span>
+
+    public void printHelp() {
+<span class="fc" id="L29">        System.out.println(&quot;\n=== Доступные команды ===\n&quot;);</span>
+<span class="fc" id="L30">        List&lt;String&gt; sortedCommands = new ArrayList&lt;&gt;(commands.keySet());</span>
+<span class="fc" id="L31">        Collections.sort(sortedCommands);</span>
+
+<span class="fc bfc" id="L33" title="All 2 branches covered.">        for (String cmd : sortedCommands) {</span>
+<span class="fc" id="L34">            System.out.printf(&quot;  %-25s - %s\n&quot;, cmd, commandDescriptions.get(cmd));</span>
+<span class="fc" id="L35">        }</span>
+<span class="fc" id="L36">        System.out.println();</span>
+<span class="fc" id="L37">    }</span>
+
+    public void parseAndExecute(String input, Scanner scanner, RBACSystem system) {
+<span class="fc bfc" id="L40" title="All 4 branches covered.">        if (input == null || input.trim().isEmpty()) return;</span>
+<span class="fc" id="L41">        String[] parts = input.trim().split(&quot;\\s+&quot;, 2);</span>
+<span class="fc" id="L42">        String commandName = parts[0];</span>
+<span class="fc" id="L43">        executeCommand(commandName, scanner, system);</span>
+<span class="fc" id="L44">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
