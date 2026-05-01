@@ -67,3 +67,10 @@ curl "http://localhost:8083/notifications?trip_id=1"
 
 ### 10. Статистика за день
 curl http://localhost:8082/trips/stats/daily
+
+### PostgreSQL: смотрим данные  
+docker exec -it taxi-postgres psql -U taxi_user -d taxi_db -c "SELECT id,email,status FROM drivers; SELECT id,status,price FROM trips;"
+
+### Redis: проверяем кэш  
+docker exec -it taxi-redis redis-cli SMEMBERS drivers:available
+- Должно быть пусто, если водитель занят
