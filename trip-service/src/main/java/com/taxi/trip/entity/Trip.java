@@ -39,7 +39,10 @@ public class Trip {
     @Column(nullable = false)
     private BigDecimal price;
 
-    private Integer rating; // 1-5
+    @Column(nullable = true)
+    @Min(value = 1, message = "Rating must be between 1 and 5")
+    @Max(value = 5, message = "Rating must be between 1 and 5")
+    private Integer rating;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();

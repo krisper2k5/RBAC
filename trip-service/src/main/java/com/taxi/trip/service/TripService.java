@@ -57,8 +57,9 @@ public class TripService {
                 .orElseThrow(() -> new RuntimeException("Trip not found: " + id));
     }
 
+    @Transactional(readOnly = true)
     public List<Trip> getTripsByPassengerId(Long passengerId) {
-        return tripRepository.findByPassengerId(passengerId);
+        return tripRepository.findByPassengerIdOrderByCreatedAtDesc(passengerId);
     }
 
     @Transactional
@@ -75,8 +76,15 @@ public class TripService {
 
     @Transactional
     public Trip rateTrip(Long id, Integer rating) {
-        if (rating < 1 || rating > 5) throw new IllegalArgumentException("Rating 1-5");
+        if (rating < 1 || rating > 5) {
+            throw new IllegalArgumentException("Rating must be between 1 and 5");
+        }
+
         Trip trip = getTripById(id);
+        if (trip.getStatus() != TripStatus.COMPLETED) {
+            throw new IllegalStateException("Can only rate completed trips");
+        }
+
         trip.setRating(rating);
         return tripRepository.save(trip);
     }

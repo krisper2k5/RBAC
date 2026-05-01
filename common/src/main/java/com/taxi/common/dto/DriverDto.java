@@ -6,16 +6,18 @@ import lombok.Data;
 
 @Data
 public class DriverDto {
-    @NotBlank
+    @NotBlank(message = "Name is required")
+    @Size(min = 2, max = 100, message = "Name must be between 2 and 100 characters")
     private String name;
 
-    @NotBlank
-    @Email
+    @NotBlank(message = "Email is required")
+    @Email(message = "Email should be valid")
     private String email;
 
-    @NotBlank
+    @NotBlank(message = "Phone is required")
+    @Pattern(regexp = "^\\+?[0-9]{10,15}$", message = "Phone should be valid")
     private String phone;
 
-    @NotBlank
+    @NotBlank(message = "License number is required")
     private String licenseNumber;
 }

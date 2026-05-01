@@ -5,6 +5,7 @@ import com.taxi.common.enums.NotificationStatus;
 import com.taxi.notification.entity.NotificationTask;
 import com.taxi.notification.repository.NotificationTaskRepository;
 import lombok.RequiredArgsConstructor;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,7 +20,7 @@ public class NotificationController {
     private final NotificationTaskRepository taskRepository;
 
     @PostMapping
-    public ResponseEntity<NotificationTask> createNotification(@RequestBody NotificationTaskDto dto) {
+    public ResponseEntity<NotificationTask> createNotification(@Valid @RequestBody NotificationTaskDto dto) {
         NotificationTask task = new NotificationTask();
         task.setTripId(dto.getTripId());
         task.setRecipientType(dto.getRecipientType());

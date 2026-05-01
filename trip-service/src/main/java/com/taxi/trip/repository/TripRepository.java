@@ -12,7 +12,7 @@ import java.util.List;
 @Repository
 public interface TripRepository extends JpaRepository<Trip, Long> {
 
-    List<Trip> findByPassengerId(Long passengerId);
+    List<Trip> findByPassengerIdOrderByCreatedAtDesc(Long passengerId);List<Trip> findByPassengerId(Long passengerId);
 
     @Query("SELECT COUNT(t) FROM Trip t WHERE t.createdAt BETWEEN :start AND :end")
     long countByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
