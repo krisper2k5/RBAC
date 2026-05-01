@@ -2,7 +2,10 @@ package com.taxi.trip.entity;
 
 import com.taxi.common.enums.TripStatus;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.Data;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -13,6 +16,7 @@ import java.time.LocalDateTime;
         @Index(name = "idx_trips_passenger", columnList = "passenger_id")
 })
 public class Trip {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
