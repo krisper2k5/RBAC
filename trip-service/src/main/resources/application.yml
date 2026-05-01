@@ -1,26 +1,29 @@
 server:
-  port: 8082
+  port: 8080
+
 spring:
   datasource:
-    url: jdbc:postgresql://127.0.0.1:5432/taxi_db
+    url: jdbc:postgresql://postgres:5432/taxi_db
     username: taxi_user
     password: taxi_password
     driver-class-name: org.postgresql.Driver
+
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
-        dialect: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: false
 
   data:
     redis:
-      host: 127.0.0.1
+      host: redis
       port: 6379
 
-user.service.url: http://127.0.0.1:8081
+user:
+  service:
+    url: http://user-service:8080
+
+app:
+  tariff-per-km: 50.0
 
 logging:
   level:

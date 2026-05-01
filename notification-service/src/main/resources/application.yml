@@ -1,21 +1,17 @@
 server:
-  port: 8083
+  port: 8080
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/taxi_db
+    url: jdbc:postgresql://postgres:5432/taxi_db
     username: taxi_user
     password: taxi_password
     driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
-      ddl-auto: create-drop
-    show-sql: false #true, если хотим видеть спам
-    properties:
-      hibernate:
-        format_sql: true
-        dialect: org.hibernate.dialect.PostgreSQLDialect
+      ddl-auto: update
+    show-sql: false
 
 app:
   worker:

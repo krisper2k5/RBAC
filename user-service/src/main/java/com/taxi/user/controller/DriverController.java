@@ -17,38 +17,28 @@ public class DriverController {
 
     @PostMapping
     public ResponseEntity<DriverResponseDto> createDriver(@Valid @RequestBody DriverDto dto) {
-        Driver driver = driverService.createDriver(dto);
-        return ResponseEntity.ok(toDto(driver));
+        return ResponseEntity.ok(toDto(driverService.createDriver(dto)));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<DriverResponseDto> getDriver(@PathVariable Long id) {
-        Driver driver = driverService.getDriverById(id);
-        return ResponseEntity.ok(toDto(driver));
+        return ResponseEntity.ok(toDto(driverService.getDriverById(id)));
     }
 
     @PatchMapping("/{id}/status")
-    public ResponseEntity<DriverResponseDto> updateDriverStatus(
-            @PathVariable Long id,
-            @RequestParam DriverStatus status) {
-        Driver driver = driverService.updateDriverStatus(id, status);
-        return ResponseEntity.ok(toDto(driver));
+    public ResponseEntity<DriverResponseDto> updateDriverStatus(@PathVariable Long id, @RequestParam DriverStatus status) {
+        return ResponseEntity.ok(toDto(driverService.updateDriverStatus(id, status)));
     }
 
     @GetMapping("/available/first")
     public ResponseEntity<DriverResponseDto> findAvailableDriver() {
-        Driver driver = driverService.findAndReserveAvailableDriver();
-        return ResponseEntity.ok(toDto(driver));
+        return ResponseEntity.ok(toDto(driverService.findAndReserveAvailableDriver()));
     }
 
-    private DriverResponseDto toDto(Driver driver) {
+    private DriverResponseDto toDto(Driver d) {
         DriverResponseDto dto = new DriverResponseDto();
-        dto.setId(driver.getId());
-        dto.setName(driver.getName());
-        dto.setEmail(driver.getEmail());
-        dto.setPhone(driver.getPhone());
-        dto.setLicenseNumber(driver.getLicenseNumber());
-        dto.setStatus(driver.getStatus());
+        dto.setId(d.getId()); dto.setName(d.getName()); dto.setEmail(d.getEmail());
+        dto.setPhone(d.getPhone()); dto.setLicenseNumber(d.getLicenseNumber()); dto.setStatus(d.getStatus());
         return dto;
     }
 }
