@@ -82,12 +82,14 @@ public class TripService {
     }
 
     public long getTripsCountToday() {
-        LocalDateTime start = LocalDateTime.now().toLocalDate().atStartOfDay();
-        return tripRepository.countTripsToday(start);
+        LocalDateTime startOfDay = LocalDateTime.now().toLocalDate().atStartOfDay();
+        LocalDateTime endOfDay = startOfDay.plusDays(1);
+        return tripRepository.countByCreatedAtBetween(startOfDay, endOfDay);
     }
 
     public Double getAveragePriceToday() {
-        LocalDateTime start = LocalDateTime.now().toLocalDate().atStartOfDay();
-        return tripRepository.averagePriceToday(start);
+        LocalDateTime startOfDay = LocalDateTime.now().toLocalDate().atStartOfDay();
+        LocalDateTime endOfDay = startOfDay.plusDays(1);
+        return tripRepository.averagePriceByCreatedAtBetween(startOfDay, endOfDay);
     }
 }

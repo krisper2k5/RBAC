@@ -14,9 +14,9 @@ public interface TripRepository extends JpaRepository<Trip, Long> {
 
     List<Trip> findByPassengerId(Long passengerId);
 
-    @Query("SELECT COUNT(t) FROM Trip t WHERE t.createdAt >= :startOfDay")
-    long countTripsToday(LocalDateTime startOfDay);
+    @Query("SELECT COUNT(t) FROM Trip t WHERE t.createdAt BETWEEN :start AND :end")
+    long countByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
 
-    @Query("SELECT AVG(t.price) FROM Trip t WHERE t.createdAt >= :startOfDay")
-    Double averagePriceToday(LocalDateTime startOfDay);
+    @Query("SELECT AVG(t.price) FROM Trip t WHERE t.createdAt BETWEEN :start AND :end")
+    Double averagePriceByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
 }
