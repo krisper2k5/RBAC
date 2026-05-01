@@ -21,3 +21,7 @@ app:
 logging:
   level:
     com.taxi.notification: DEBUG
+
+jwt:
+  secret: "mySuperSecretKeyForTaxiServiceMinimum32Chars!"
+  expiration: 86400000

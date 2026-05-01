@@ -21,3 +21,7 @@ spring:
 logging:
   level:
     com.taxi.user: DEBUG
+
+jwt:
+  secret: "mySuperSecretKeyForTaxiServiceMinimum32Chars!"
+  expiration: 86400000

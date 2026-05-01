@@ -1,10 +1,15 @@
 package com.taxi.trip.service;
 
+import com.taxi.common.dto.NotificationTaskDto;
+import com.taxi.common.enums.DriverStatus;
+import com.taxi.common.enums.RecipientType;
 import com.taxi.common.enums.TripStatus;
+import com.taxi.trip.client.NotificationClient;
 import com.taxi.trip.client.UserClient;
 import com.taxi.trip.entity.Trip;
 import com.taxi.trip.repository.TripRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,12 +25,18 @@ public class TripService {
 
     private final TripRepository tripRepository;
     private final UserClient userClient;
+    private final NotificationClient notificationClient;
     private final StringRedisTemplate redisTemplate;
+
+    @Value("${app.tariff-per-km:50.0}")
+    private double tariffPerKm;
+
     private static final String AVAILABLE_DRIVERS_KEY = "drivers:available";
-    private final BigDecimal tariffPerKm = BigDecimal.valueOf(50.0);
 
     @Transactional
     public Trip createTrip(Long passengerId, String origin, String destination, Double distanceKm) {
+        userClient.validatePassengerExists(passengerId);
+
         Trip trip = new Trip();
         trip.setPassengerId(passengerId);
         trip.setOrigin(origin);
@@ -35,21 +46,36 @@ public class TripService {
         trip.setStatus(TripStatus.CREATED);
 
         try {
-            Boolean hasAvailable = redisTemplate.hasKey(AVAILABLE_DRIVERS_KEY);
-
             var driver = userClient.findAvailableDriver();
             trip.setDriverId(driver.getId());
             trip.setStatus(TripStatus.ASSIGNED);
 
+            sendNotification(trip.getId(), RecipientType.DRIVER, driver.getId(),
+                    "Новая поездка: " + origin + " → " + destination);
+
         } catch (Exception e) {
-            trip.setStatus(TripStatus.CREATED); // Нет доступных водителей
+            trip.setStatus(TripStatus.CREATED);
+            sendNotification(trip.getId(), RecipientType.PASSENGER, passengerId,
+                    "Поиск водителя... Поездка в очереди");
         }
 
         return tripRepository.save(trip);
     }
 
+    private void sendNotification(Long tripId, RecipientType type, Long recipientId, String message) {
+        try {
+            NotificationTaskDto dto = new NotificationTaskDto();
+            dto.setTripId(tripId);
+            dto.setRecipientType(type);
+            dto.setRecipientId(recipientId);
+            dto.setMessage(message);
+            notificationClient.createNotification(dto);
+        } catch (Exception e) {
+        }
+    }
+
     private BigDecimal calculatePrice(Double distanceKm) {
-        return tariffPerKm.multiply(BigDecimal.valueOf(distanceKm));
+        return BigDecimal.valueOf(tariffPerKm).multiply(BigDecimal.valueOf(distanceKm));
     }
 
     public Trip getTripById(Long id) {
@@ -65,10 +91,26 @@ public class TripService {
     @Transactional
     public Trip updateTripStatus(Long id, TripStatus newStatus) {
         Trip trip = getTripById(id);
+        TripStatus oldStatus = trip.getStatus();
         trip.setStatus(newStatus);
 
+        // Уведомления при смене статуса
+        if (trip.getDriverId() != null) {
+            String msg = switch (newStatus) {
+                case IN_PROGRESS -> "Поездка началась";
+                case COMPLETED -> "Поездка завершена. Спасибо!";
+                case CANCELLED -> "Поездка отменена";
+                default -> null;
+            };
+            if (msg != null) {
+                sendNotification(trip.getId(), RecipientType.DRIVER, trip.getDriverId(), msg);
+                sendNotification(trip.getId(), RecipientType.PASSENGER, trip.getPassengerId(), msg);
+            }
+        }
+
+        // Освобождаем водителя при завершении
         if (newStatus == TripStatus.COMPLETED) {
-            userClient.updateDriverStatus(trip.getDriverId(), com.taxi.common.enums.DriverStatus.AVAILABLE);
+            userClient.updateDriverStatus(trip.getDriverId(), DriverStatus.AVAILABLE);
         }
 
         return tripRepository.save(trip);

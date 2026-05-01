@@ -22,9 +22,17 @@ user:
   service:
     url: http://user-service:8080
 
+notification:
+  service:
+    url: http://notification-service:8080
+
 app:
   tariff-per-km: 50.0
 
 logging:
   level:
     com.taxi.trip: DEBUG
+
+jwt:
+  secret: "mySuperSecretKeyForTaxiServiceMinimum32Chars!"
+  expiration: 86400000
