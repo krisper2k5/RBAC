@@ -28,19 +28,19 @@ docker compose logs -f
 ## Тестовые данные
 
 ### 1. Регистрация пассажира
-curl -X POST http://localhost:8081/passengers -H "Content-Type: application/json" -d '{"name":"Иван Петров","email":"ivan@taxi.test","phone":"+79991112233"}'
+curl -v -w "\n>>> HTTP Status: %{http_code}\n" -X POST http://localhost:8081/passengers -H "Content-Type: application/json" -d '{"name":"Иван Петров","email":"ivan@taxi.test","phone":"+79991112233"}' | jq .
 
 ### 2. Регистрация двух водителей
-curl -X POST http://localhost:8081/drivers -H "Content-Type: application/json" -d '{"name":"Алексей Смирнов","email":"alex@taxi.test","phone":"+79994445566","licenseNumber":"MSK001"}'
+curl -v -w "\n>>> HTTP Status: %{http_code}\n" -X POST http://localhost:8081/drivers -H "Content-Type: application/json" -d '{"name":"Алексей Смирнов","email":"alex@taxi.test","phone":"+79994445566","licenseNumber":"MSK001"}'
 
-curl -X POST http://localhost:8081/drivers -H "Content-Type: application/json" -d '{"name":"Дмитрий Козлов","email":"dmitry@taxi.test","phone":"+79997778899","licenseNumber":"MSK002"}'
+curl -v -w "\n>>> HTTP Status: %{http_code}\n" -X POST http://localhost:8081/drivers -H "Content-Type: application/json" -d '{"name":"Дмитрий Козлов","email":"dmitry@taxi.test","phone":"+79997778899","licenseNumber":"MSK002"}'
 
 ### 3. Установка статуса AVAILABLE для водителей
-curl -X PATCH "http://localhost:8081/drivers/1/status?status=AVAILABLE"
-curl -X PATCH "http://localhost:8081/drivers/2/status?status=AVAILABLE"
+curl -v -w "\n>>> HTTP Status: %{http_code}\n" -X PATCH "http://localhost:8081/drivers/1/status?status=AVAILABLE"
+curl -v -w "\n>>> HTTP Status: %{http_code}\n" -X PATCH "http://localhost:8081/drivers/2/status?status=AVAILABLE"
 
 ### 4. Создание поездки (система автоматически назначит водителя)
-curl -X POST http://localhost:8082/trips -H "Content-Type: application/json" -d '{"passengerId":1,"origin":"Красная площадь","destination":"ВДНХ","distanceKm":12.5}'
+curl -v -w "\n>>> HTTP Status: %{http_code}\n" -X POST http://localhost:8082/trips -H "Content-Type: application/json" -d '{"passengerId":1,"origin":"Красная площадь","destination":"ВДНХ","distanceKm":12.5}'
 
 ### 5. Проверка поездки
 curl http://localhost:8082/trips/1

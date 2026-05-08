@@ -20,7 +20,8 @@ app:
 
 logging:
   level:
-    com.taxi.notification: DEBUG
+    com.taxi.common.security: DEBUG
+    io.jsonwebtoken: DEBUG
 
 jwt:
   secret: "mySuperSecretKeyForTaxiServiceMinimum32Chars!"

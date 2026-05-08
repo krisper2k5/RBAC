@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -55,9 +56,12 @@ public class TripController {
 
     @GetMapping("/stats/daily")
     public ResponseEntity<Map<String, Object>> getDailyStats() {
-        return ResponseEntity.ok(Map.of(
-                "tripsCount", tripService.getTripsCountToday(),
-                "averagePrice", tripService.getAveragePriceToday()
-        ));
+        Map<String, Object> stats = new HashMap<>();
+        stats.put("tripsCount", tripService.getTripsCountToday());
+
+        Double avgPrice = tripService.getAveragePriceToday();
+        stats.put("averagePrice", avgPrice != null ? avgPrice : 0.0);
+
+        return ResponseEntity.ok(stats);
     }
 }

@@ -1,5 +1,4 @@
 version: '3.8'
-
 services:
   postgres:
     image: postgres:16-alpine
@@ -55,6 +54,8 @@ services:
       SPRING_REDIS_PORT: 6379
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       SERVER_PORT: 8080
+      JWT_SECRET: "mySuperSecretKeyForTaxiServiceMinimum32Chars!"
+      JWT_EXPIRATION: "86400000"
     networks:
       - taxi-network
 
@@ -80,6 +81,8 @@ services:
       SPRING_REDIS_PORT: 6379
       USER_SERVICE_URL: http://user-service:8080
       SERVER_PORT: 8080
+      JWT_SECRET: "mySuperSecretKeyForTaxiServiceMinimum32Chars!"
+      JWT_EXPIRATION: "86400000"
     networks:
       - taxi-network
 
@@ -100,6 +103,8 @@ services:
       APP_WORKER_POOL_SIZE: 4
       APP_WORKER_MAX_RETRIES: 3
       SERVER_PORT: 8080
+      JWT_SECRET: "mySuperSecretKeyForTaxiServiceMinimum32Chars!"
+      JWT_EXPIRATION: "86400000"
     networks:
       - taxi-network
 

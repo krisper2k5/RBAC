@@ -20,7 +20,8 @@ spring:
 
 logging:
   level:
-    com.taxi.user: DEBUG
+    com.taxi.common.security: DEBUG
+    io.jsonwebtoken: DEBUG
 
 jwt:
   secret: "mySuperSecretKeyForTaxiServiceMinimum32Chars!"

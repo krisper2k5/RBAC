@@ -1,5 +1,6 @@
 com/taxi/trip/client/NotificationClient.class
 com/taxi/trip/client/UserClient.class
+com/taxi/trip/config/FeignConfig.class
 com/taxi/trip/service/TripService.class
 com/taxi/trip/TripApplication.class
 com/taxi/trip/controller/TripController.class

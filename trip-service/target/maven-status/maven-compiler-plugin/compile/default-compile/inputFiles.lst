@@ -5,3 +5,4 @@
 /mnt/c/Users/Mi/OpenideProjects/RBAC/trip-service/src/main/java/com/taxi/trip/repository/TripRepository.java
 /mnt/c/Users/Mi/OpenideProjects/RBAC/trip-service/src/main/java/com/taxi/trip/client/UserClient.java
 /mnt/c/Users/Mi/OpenideProjects/RBAC/trip-service/src/main/java/com/taxi/trip/controller/TripController.java
+/mnt/c/Users/Mi/OpenideProjects/RBAC/trip-service/src/main/java/com/taxi/trip/config/FeignConfig.java

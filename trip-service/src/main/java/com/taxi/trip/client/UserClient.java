@@ -5,7 +5,11 @@ import com.taxi.common.enums.DriverStatus;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
-@FeignClient(name = "user-service", url = "${user.service.url:http://user-service:8080}")
+@FeignClient(
+        name = "user-service",
+        url = "${user.service.url:http://user-service:8080}",
+        configuration = com.taxi.trip.config.FeignConfig.class
+)
 public interface UserClient {
 
     @GetMapping("/drivers/available/first")
